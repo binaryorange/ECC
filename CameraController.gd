@@ -37,6 +37,9 @@ var distance_array = []
 
 var clipCamera = true
 
+# use this to switch between debug camera and regular view camera
+var isDebugCameraActive = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	
@@ -138,7 +141,8 @@ func _update_camera():
 	
 		if clip_offset > 0:
 
-			# update the viewcam's local z position
+			# update the viewcam's local z position to the current clip cam's PARENT node's local z,
+			# then subtract the current clip cam's clip offset multiplied by ClipDistanceMultiplier
 			viewCam.transform.origin.z = lerp(viewCam.transform.origin.z,
 			current_clip_cam.get_parent().transform.origin.z - clip_offset * ClipDistanceMultiplier,
 			LerpWeight * 10)
@@ -188,8 +192,12 @@ func _update_active_clip_camera():
 		
 func _switch_camera():
 	if Input.is_action_just_pressed("switch_camera_to_debug"):
-		get_parent().get_node("DebugCamera").current = !get_parent().get_node("DebugCamera").current
-		viewCam.current = !viewCam.current
+		# flip the bool
+		isDebugCameraActive = !isDebugCameraActive
+		get_parent().get_node("DebugCamera").current = isDebugCameraActive
+		
+		# flip it back here...
+		viewCam.current = !isDebugCameraActive
 
 
 
