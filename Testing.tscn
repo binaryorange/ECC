@@ -102,7 +102,7 @@ __meta__ = {
 shape = SubResource( 8 )
 
 [node name="Cylinder" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 0, 4, 9 )
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 0, 4, 10 )
 mesh = SubResource( 9 )
 material/0 = null
 
@@ -112,7 +112,7 @@ material/0 = null
 shape = SubResource( 10 )
 
 [node name="Cylinder2" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -5, 4, 8 )
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -5, 4, 9 )
 mesh = SubResource( 9 )
 material/0 = null
 
@@ -122,7 +122,7 @@ material/0 = null
 shape = SubResource( 10 )
 
 [node name="Cylinder3" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 5, 4, 8 )
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 5, 4, 9 )
 mesh = SubResource( 9 )
 material/0 = null
 
