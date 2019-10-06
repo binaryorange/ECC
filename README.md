@@ -10,4 +10,7 @@ It also offers no smoothing, so the action of clipping and going back to a non-c
 
 The reason I am doing this is to greatly improve the usefullness and reusability of the ClippedCamera node. 
 
+# To stay updated and gleen details...
+...visit my blog where progress reports will be made in such a schedule as I see fit! https://binaryorangestudios.wordpress.com/
+
 # TODO, and coming up - instructions on how to use this node when it is officially released! Stay tuned!
