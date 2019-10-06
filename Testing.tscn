@@ -1,0 +1,132 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://TestPlayer.tscn" type="PackedScene" id=1]
+[ext_resource path="res://lightblue.tres" type="Material" id=2]
+[ext_resource path="res://lightred.tres" type="Material" id=3]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0.219608, 1, 0, 1 )
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="BoxShape" id=3]
+
+[sub_resource type="SphereMesh" id=4]
+material = ExtResource( 3 )
+
+[sub_resource type="SphereShape" id=5]
+
+[sub_resource type="CubeMesh" id=6]
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_color = Color( 0.960784, 0.952941, 0.380392, 1 )
+
+[sub_resource type="BoxShape" id=8]
+
+[sub_resource type="CylinderMesh" id=9]
+material = ExtResource( 2 )
+
+[sub_resource type="CylinderShape" id=10]
+
+[node name="Testing" type="Spatial"]
+
+[node name="Floor" type="MeshInstance" parent="."]
+transform = Transform( 100, 0, 0, 0, 0.1, 0, 0, 0, 100, 0, 0, 0 )
+material_override = SubResource( 1 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Floor" type="StaticBody" parent="Floor"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Floor/Floor"]
+shape = SubResource( 3 )
+
+[node name="TestPlayer" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -13 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
+shadow_enabled = true
+
+[node name="Sphere" type="MeshInstance" parent="."]
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, -5, 5, 3 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Sphere"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Sphere/StaticBody"]
+shape = SubResource( 5 )
+
+[node name="Sphere2" type="MeshInstance" parent="Sphere"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Sphere/Sphere2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Sphere/Sphere2/StaticBody"]
+shape = SubResource( 5 )
+
+[node name="Sphere4" type="MeshInstance" parent="Sphere"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -3.5 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Sphere/Sphere4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Sphere/Sphere4/StaticBody"]
+shape = SubResource( 5 )
+
+[node name="Sphere3" type="MeshInstance" parent="Sphere"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -3.5 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Sphere 3" type="StaticBody" parent="Sphere/Sphere3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Sphere/Sphere3/Sphere 3"]
+shape = SubResource( 5 )
+
+[node name="Ceiling" type="MeshInstance" parent="."]
+transform = Transform( 10, 0, 0, 0, 0.1, 0, 0, 0, 10, 0, 8, -10 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Ceiling"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ceiling/Ceiling"]
+shape = SubResource( 8 )
+
+[node name="Cylinder" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 0, 4, 9 )
+mesh = SubResource( 9 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder/Cylinder"]
+shape = SubResource( 10 )
+
+[node name="Cylinder2" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -5, 4, 8 )
+mesh = SubResource( 9 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder2/Cylinder"]
+shape = SubResource( 10 )
+
+[node name="Cylinder3" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 5, 4, 8 )
+mesh = SubResource( 9 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder3/Cylinder"]
+shape = SubResource( 10 )
