@@ -1,41 +1,65 @@
 extends Spatial
 
+# This is the exception that will be added to EVERY ClippedCamera.
+# This is so that we don't clip to ourselves! 
+export (NodePath) var ClippedCameraException
 
-export (NodePath) var Exception
+# This is the array that stores ALL of the ClippedCameras.
+# Each camera is then accessed with the zoom variable to properly get the correct camera
+# at each zoom level. Pretty clever, eh?
 export (Array,NodePath) var cam_array = []
+
+# This is the camera that will actually be used to display the scene.
 export (NodePath) var ViewCam
 
-# rotation
+# Rotation speed for the camera
 export (float) var RotationSpeed = 2.0
 
-# weight for camera lerp
+# Weight for camera lerp. Effectively used as the lerping speed. Default is 0.03, but you can change it.
 export (float) var LerpWeight = 0.03
 
+# By default, this is set to 5 - which is the offset of the ClipCam's local z relative to their parent nodes. 
+# You *can* change this, but it may cause inaccurate distances!
 export (float) var CameraDistanceOffset = 5.0
 
-# limit for camera clipping at zoom level 3
-# if this angle is exceeded, the camera will clip as normal despite being zoomed out fully
-export (float) var MaxZoomAngleLimit = -18.0
+# This multiplies the current clip camera's clip offset. 
+# Change this if you'd like it clip in closer, further away, or even BACKWARDS.
+# By default, set to 0.25 so that it divides the clip offset to be a bit of a tighter zoom.
+export (float) var ClipDistanceMultiplier = 0.25
 
-export (float) var ClipDistanceMultiplier = 1.5
+# This is the maximum distance an object needs to be away from the view camera to not clip through.
+# By default set to 5, since that seemed to be the number that played the nicest! 
+export (float) var MaxOccludeDistance = 5.0
 
-export (float) var MaxOccludeDistance = 3.0
+# This is the maximum angle the camera can look up before switching to the ConfinedSpaceCam
+# 18 by default, but can be adjusted to better suit your needs.
+export (float) var MaxAngleLimit = 18.0
 
-
-# private variables
+# node variables 
 var yGimbal
 var xGimbal
 var viewCam
 
+# input and other variables
 var zoom = 0
-var oldDistance
+var oldZoom = 0
+var oldClipCamera
+var confinedSpaceCam
 var newDistance
 var cam_right
 var cam_up
 
-var distance_array = []
+# we use this array to store the distances of each ClipCamera at runtime so we don't have to worry about 
+# swapping and changing around values
+var viewcam_distance_array = []
+
+# we use this array to store the local z of the clipcamera relative to its parent.
+# this is so we can properly calculate the offset when we use the ConfinedSpaceCam, which has a different 
+# local z value (because it needs to be a tighter view)
+var clipcam_offset_array = []
 
 var clipCamera = true
+var inConfinedSpace = false
 
 # use this to switch between debug camera and regular view camera
 var isDebugCameraActive = false
@@ -52,13 +76,22 @@ func _ready():
 	
 	# add the Exception node to every ClippedCamera in cam_array
 	for cam in range(cam_array.size()):
-		get_node(cam_array[cam]).add_exception(get_node(Exception))
-		print(get_node(cam_array[cam]).name + " received " + get_node(Exception).name + " as collision exception at " + str(OS.get_time()))
+		get_node(cam_array[cam]).add_exception(get_node(ClippedCameraException))
+		print(get_node(cam_array[cam]).name + " received " + get_node(ClippedCameraException).name + " as collision exception at " + str(OS.get_time()))
 		
-		# add the transform.z value to each distance_array element
-		distance_array.insert(cam, get_node(cam_array[cam]).get_parent().transform.origin.z)
+		# add the transform.z value of the clipcam's parent to each viewcam_distance_array element
+		viewcam_distance_array.insert(cam, get_node(cam_array[cam]).get_parent().transform.origin.z)
 		
-	# disable the second and third clip cameras automatically
+		# now store the offset of each clipcam and its parent
+		clipcam_offset_array.insert(cam, get_node(cam_array[cam]).transform.origin.z)
+		
+		# debug logs
+		print("Added camera " + str(get_node(cam_array[cam]).name) + " to cam_array")
+		print("Added distance value " + str(viewcam_distance_array[cam]) + " to viewcam_distance_array")
+		print("Added clipcam offset value " + str(clipcam_offset_array[cam]) + " to clipcam_offset_array")
+		
+		
+	# disable all but the first clip camera and the confined space cam automatically
 	get_node(cam_array[1]).set_clip_to_bodies(false)
 	get_node(cam_array[2]).set_clip_to_bodies(false)
 
@@ -68,9 +101,9 @@ func _ready():
 	# set the view camera to the local z axis of the first clip cam
 	viewCam.transform.origin.z = get_node(cam_array[0]).transform.origin.z
 	
-	# default oldDistance
-	oldDistance = get_node(cam_array[0]).transform.origin.z
-	
+	# establish the confinedSpaceCam
+	confinedSpaceCam = get_node(cam_array[3])
+
 
 func _process(delta):
 	_get_input(delta)
@@ -110,8 +143,6 @@ func _update_camera():
 	# store the xGimbal's x rotation
 	var x_rot = xGimbal.rotation_degrees.x
 	
-	var oldZ = current_clip_cam.get_parent().transform.origin.z
-	
 	# cast a ray from the View Camera to the player. If an object is in the way, 
 	# calculate the distance between it and the camera. If it is less than the Max Occlude Distance, 
 	# ALWAYS clip and pull through, but if it is more than or equal to the Occlude Distance, ignore it
@@ -125,16 +156,30 @@ func _update_camera():
 		# calculate distance
 		var distance_between = (viewCam.global_transform.origin - ray_cast.collider.global_transform.origin)
 		
-		if distance_between.length() < MaxOccludeDistance:
+		if distance_between.length() < MaxOccludeDistance*viewcam_distance_array[zoom]:
 			clipCamera = true
 		else:
-			# now check if we are not doing any left/right camera rotation, or if we're
-			# rotating above the Max Zoom Angle Limit. CLip through if they are true.
-			if x_rot < MaxZoomAngleLimit or x_rot > abs(MaxZoomAngleLimit):
-				clipCamera = true
-			else:
-				clipCamera = false
-			
+			clipCamera = false
+		
+		# now check to see if the player has rotated the camera up or down and then see if
+		# the confined space cam is clipping the top of any geometry present. If it is, then we
+		# clip through to it!
+#		if x_rot <= viewcam_distance_array[zoom]*2 or x_rot > viewcam_distance_array[zoom]*2:
+#
+#			# switch to the confinedspacecam by updating the zoom index
+#			oldZoom = zoom
+#			zoom = 3
+#
+#			clipCamera = true
+#
+#		else:
+#			if oldZoom > -1:
+#				print("oldZoom " + str(oldZoom) + " this zoom " + str(zoom))
+#				zoom = oldZoom
+#				clipCamera = false
+#				oldZoom = -1
+#				print("oldZoom " + str(oldZoom) + " this zoom " + str(zoom))
+		
 	if clipCamera:
 		# store the clip offset of the current clip camera
 		var clip_offset = current_clip_cam.get_clip_offset()
@@ -149,21 +194,19 @@ func _update_camera():
 		
 
 	# calculate the distance from the camera back to the player.
-	# if it is less than the current value in distance_array, set the local Z of the target
+	# if it is less than the current value in viewcam_distance_array, set the local Z of the target
 	# of the current ClipCamera to that exact value, to "push" the camera forward to keep the player in sight!
 	if zoom > 0:
 		
 		var distance_between2 = (viewCam.global_transform.origin - get_parent().global_transform.origin)
 			
-		if distance_between2.length() < distance_array[zoom]:
+		if distance_between2.length() < viewcam_distance_array[zoom]:
 			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z
 	elif current_clip_cam.get_clip_offset() == 0:
-		current_clip_cam.get_parent().transform.origin.z = distance_array[zoom]
-
-	
+		current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
 
 	# set the z position of the viewCam to the lerped distance
-	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, distance_array[zoom] + CameraDistanceOffset, LerpWeight)
+	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, viewcam_distance_array[zoom] + CameraDistanceOffset, LerpWeight)
 	
 func _update_active_clip_camera():
 	
@@ -173,21 +216,17 @@ func _update_active_clip_camera():
 		get_node(cam_array[1]).set_clip_to_bodies(false)
 		get_node(cam_array[2]).set_clip_to_bodies(false)
 		print(get_node(cam_array[0]).name + ": Clipping set to: " + str(get_node(cam_array[0]).is_clip_to_bodies_enabled()))
-		print(get_node(cam_array[1]).name + ": Clipping set to: " + str(get_node(cam_array[1]).is_clip_to_bodies_enabled()))
-		print(get_node(cam_array[2]).name + ": Clipping set to: " + str(get_node(cam_array[2]).is_clip_to_bodies_enabled()))
+		
 	elif zoom == 1 and !get_node(cam_array[1]).is_clip_to_bodies_enabled():
 		get_node(cam_array[0]).set_clip_to_bodies(false)
 		get_node(cam_array[1]).set_clip_to_bodies(true)
 		get_node(cam_array[2]).set_clip_to_bodies(false)
-		print(get_node(cam_array[0]).name + ": Clipping set to: " + str(get_node(cam_array[0]).is_clip_to_bodies_enabled()))
 		print(get_node(cam_array[1]).name + ": Clipping set to: " + str(get_node(cam_array[1]).is_clip_to_bodies_enabled()))
-		print(get_node(cam_array[2]).name + ": Clipping set to: " + str(get_node(cam_array[2]).is_clip_to_bodies_enabled()))
+		
 	elif zoom == 2 and !get_node(cam_array[2]).is_clip_to_bodies_enabled():
 		get_node(cam_array[0]).set_clip_to_bodies(false)
 		get_node(cam_array[1]).set_clip_to_bodies(false)
 		get_node(cam_array[2]).set_clip_to_bodies(true)
-		print(get_node(cam_array[0]).name + ": Clipping set to: " + str(get_node(cam_array[0]).is_clip_to_bodies_enabled()))
-		print(get_node(cam_array[1]).name + ": Clipping set to: " + str(get_node(cam_array[1]).is_clip_to_bodies_enabled()))
 		print(get_node(cam_array[2]).name + ": Clipping set to: " + str(get_node(cam_array[2]).is_clip_to_bodies_enabled()))
 		
 func _switch_camera():

@@ -69,11 +69,11 @@ script = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": ""
 }
-Exception = NodePath("..")
-cam_array = [ NodePath("XGimbal/CamTarget1/ClipCam1"), NodePath("XGimbal/CamTarget2/ClipCam2"), NodePath("XGimbal/CamTarget3/ClipCam3") ]
+ClippedCameraException = NodePath("..")
+cam_array = [ NodePath("XGimbal/CamTarget1/ClipCam1"), NodePath("XGimbal/CamTarget2/ClipCam2"), NodePath("XGimbal/CamTarget3/ClipCam3"), NodePath("XGimbal/ConfinedSpaceCam/ConfnedSpaceCam") ]
 ViewCam = NodePath("XGimbal/ViewCam")
-ClipDistanceMultiplier = 0.25
-MaxOccludeDistance = 5.0
+MaxOccludeDistance = 10.0
+MaxAngleLimit = 10.0
 
 [node name="XGimbal" type="Spatial" parent="YGimbal"]
 
@@ -127,6 +127,20 @@ process_mode = 1
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 mesh = SubResource( 10 )
 material/0 = null
+
+[node name="ConfinedSpaceCam" type="Spatial" parent="YGimbal/XGimbal"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+
+[node name="ConfnedSpaceCam" type="ClippedCamera" parent="YGimbal/XGimbal/ConfinedSpaceCam"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
+doppler_tracking = 1
+process_mode = 1
+__meta__ = {
+"_editor_description_": "This is the ClippedCamera that is to be used when the player enters very tight spaces, or when the player moves the camera all the way up or down, such as when the camera contacts the floor, or there is geometry above the player and the camera should show the player instead.
+
+It is not checking for any collisions until the player has met either of that criteria!
+"
+}
 
 [node name="DebugCamera" type="Camera" parent="."]
 transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 14, 3, 8 )
