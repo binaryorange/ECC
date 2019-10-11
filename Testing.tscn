@@ -112,7 +112,6 @@ __meta__ = {
 [node name="Ceiling" type="StaticBody" parent="Ceiling2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Ceiling2/Ceiling"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 8 )
 
 [node name="Ceiling3" type="MeshInstance" parent="."]

@@ -44,7 +44,6 @@ var viewCam
 var zoom = 0
 var oldZoom = 0
 var oldClipCamera
-var confinedSpaceCam
 var newDistance
 var cam_right
 var cam_up
@@ -100,9 +99,6 @@ func _ready():
 	
 	# set the view camera to the local z axis of the first clip cam
 	viewCam.transform.origin.z = get_node(cam_array[0]).transform.origin.z
-	
-	# establish the confinedSpaceCam
-	confinedSpaceCam = get_node(cam_array[3])
 
 
 func _process(delta):
@@ -161,25 +157,6 @@ func _update_camera():
 		else:
 			clipCamera = false
 		
-		# now check to see if the player has rotated the camera up or down and then see if
-		# the confined space cam is clipping the top of any geometry present. If it is, then we
-		# clip through to it!
-#		if x_rot <= viewcam_distance_array[zoom]*2 or x_rot > viewcam_distance_array[zoom]*2:
-#
-#			# switch to the confinedspacecam by updating the zoom index
-#			oldZoom = zoom
-#			zoom = 3
-#
-#			clipCamera = true
-#
-#		else:
-#			if oldZoom > -1:
-#				print("oldZoom " + str(oldZoom) + " this zoom " + str(zoom))
-#				zoom = oldZoom
-#				clipCamera = false
-#				oldZoom = -1
-#				print("oldZoom " + str(oldZoom) + " this zoom " + str(zoom))
-		
 	if clipCamera:
 		# store the clip offset of the current clip camera
 		var clip_offset = current_clip_cam.get_clip_offset()
@@ -206,7 +183,7 @@ func _update_camera():
 		current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
 
 	# set the z position of the viewCam to the lerped distance
-	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, viewcam_distance_array[zoom] + CameraDistanceOffset, LerpWeight)
+	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, viewcam_distance_array[zoom] + clipcam_offset_array[zoom], LerpWeight)
 	
 func _update_active_clip_camera():
 	
