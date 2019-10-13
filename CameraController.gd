@@ -119,8 +119,8 @@ func _process(delta):
 func _get_input(delta):
 	
 	# store the input in a local var
-	cam_right = Input.get_action_strength("cam_look_left") - Input.get_action_strength("cam_look_right")
-	cam_up = Input.get_action_strength("cam_look_up") - Input.get_action_strength("cam_look_down")
+	cam_right = Input.get_action_strength("cam_look_right") - Input.get_action_strength("cam_look_left")
+	cam_up = Input.get_action_strength("cam_look_down") - Input.get_action_strength("cam_look_up")
 	
 	# rotate the gimbals around their local axis
 	self.rotate_y(cam_right * RotationSpeed * delta)
@@ -156,15 +156,16 @@ func _update_camera():
 	var ray_cast = space_state.intersect_ray(viewCam.global_transform.origin, get_parent().global_transform.origin)
 	
 	# check to see if a body is in the way or not
-	if !ray_cast.collider.is_in_group("Player"):
-		# calculate distance
-		var distance_between = (viewCam.global_transform.origin - ray_cast.collider.global_transform.origin)
-		
-		if distance_between.length() < MaxOccludeDistance-x_rot:
+	if !ray_cast.empty():
+		if !ray_cast.collider.is_in_group("Player"):
+			# calculate distance
+			var distance_between = (viewCam.global_transform.origin - ray_cast.collider.global_transform.origin)
 			
-			clipCamera = true
-		else:
-			clipCamera = false
+			if distance_between.length() < MaxOccludeDistance-x_rot:
+				
+				clipCamera = true
+			else:
+				clipCamera = false
 		
 	if clipCamera:
 		# store the clip offset of the current clip camera
@@ -177,27 +178,27 @@ func _update_camera():
 			
 			if EnablePullAheadSmoothing:
 				viewCam.transform.origin.z = lerp(viewCam.transform.origin.z,
-				clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier,
+				viewcam_distance_array[zoom] + clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier,
 				PullAheadSmoothingWeight)
 			else:
-				viewCam.transform.origin.z = clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier
+				viewCam.transform.origin.z = viewcam_distance_array[zoom] + clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier
 		
 
-	# calculate the distance from the camera back to the player.
-	# if it is less than the current value in viewcam_distance_array, set the local Z of the target
-	# of the current ClipCamera to that exact value, to "push" the camera forward to keep the player in sight!
+	# if we are at a zoom level greater than 0, calculare the distance from the camera to the player,
+	# then subtract that distance divided by 2 from the camera's local z position to treat the 
+	# camera target like a spring.
 	if zoom > 0:
 		
 		var distance_between2 = (viewCam.global_transform.origin - get_parent().global_transform.origin)
-			
-		if distance_between2.length() < viewcam_distance_array[zoom]:
-#			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z
-			viewCam.transform.origin.z = distance_between2.length()
-#	elif current_clip_cam.get_clip_offset() == 0:
-#		current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
+		if current_clip_cam.get_clip_offset() > 0:
+			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_between2.length()/2
+			current_clip_cam.transform.origin.z = viewcam_distance_array[zoom] + clipcam_offset_array[zoom]
+		else:
+			current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
+			current_clip_cam.transform.origin.z = clipcam_offset_array[zoom]
 
 	# set the z position of the viewCam to the lerped distance
-	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, clipcam_offset_array[zoom], LerpWeight)
+	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, viewcam_distance_array[zoom] + clipcam_offset_array[zoom], LerpWeight)
 	
 func _update_active_clip_camera():
 	

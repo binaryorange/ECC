@@ -17,8 +17,8 @@ func _ready():
 func _physics_process(delta):
 	
 	# get the input
-	h = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-	v = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
+	h = Input.get_action_strength("move_left") - Input.get_action_strength("move_right")
+	v = Input.get_action_strength("move_up") - Input.get_action_strength("move_down")
 	
 	velocity = Vector3(h, gravity, v) * MoveSpeed * delta
 	
