@@ -65,6 +65,7 @@ mesh = SubResource( 2 )
 material/0 = null
 
 [node name="YGimbal" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -1 )
 script = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": ""
@@ -72,9 +73,9 @@ __meta__ = {
 ClippedCameraException = NodePath("..")
 cam_array = [ NodePath("XGimbal/CamTarget1/ClipCam1"), NodePath("XGimbal/CamTarget2/ClipCam2"), NodePath("XGimbal/CamTarget3/ClipCam3") ]
 ViewCam = NodePath("XGimbal/ViewCam")
-CameraDistanceOffset = 3.0
-MaxOccludeDistance = 10.0
-MaxAngleLimit = 10.0
+ClipDistanceMultiplier = 1.25
+EnablePullAheadSmoothing = true
+PullAheadSmoothingWeight = 0.2
 
 [node name="XGimbal" type="Spatial" parent="YGimbal"]
 
@@ -105,7 +106,7 @@ material/0 = SubResource( 6 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 1 )
 
 [node name="ClipCam2" type="ClippedCamera" parent="YGimbal/XGimbal/CamTarget2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 doppler_tracking = 1
 process_mode = 1
 
@@ -118,7 +119,7 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
 
 [node name="ClipCam3" type="ClippedCamera" parent="YGimbal/XGimbal/CamTarget3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9 )
 doppler_tracking = 1
 process_mode = 1
 

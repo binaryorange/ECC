@@ -18,22 +18,25 @@ export (float) var RotationSpeed = 2.0
 # Weight for camera lerp. Effectively used as the lerping speed. Default is 0.03, but you can change it.
 export (float) var LerpWeight = 0.03
 
-# By default, this is set to 5 - which is the offset of the ClipCam's local z relative to their parent nodes. 
-# You *can* change this, but it may cause inaccurate distances!
-export (float) var CameraDistanceOffset = 5.0
-
 # This multiplies the current clip camera's clip offset. 
 # Change this if you'd like it clip in closer, further away, or even BACKWARDS.
-# By default, set to 0.25 so that it divides the clip offset to be a bit of a tighter zoom.
-export (float) var ClipDistanceMultiplier = 0.25
+export (float) var ClipDistanceMultiplier = 1.15
 
 # This is the maximum distance an object needs to be away from the view camera to not clip through.
 # By default set to 5, since that seemed to be the number that played the nicest! 
 export (float) var MaxOccludeDistance = 5.0
 
-# This is the maximum angle the camera can look up before switching to the ConfinedSpaceCam
-# 18 by default, but can be adjusted to better suit your needs.
-export (float) var MaxAngleLimit = 18.0
+# The minimum camera angle limit (default is -70)
+export (float) var MinCameraAngleLimit = -70
+
+# The maximum camera angle (default is 35)
+export (float) var MaxCameraAngleLimit = 35
+
+# Allows for a smoothing effect when the camera is pulling ahead through geometry, giving a little more flexibility 
+# to the overall system.  Default is false for instant clipping.
+export (bool) var EnablePullAheadSmoothing = false
+
+export (float) var PullAheadSmoothingWeight = 0.2
 
 # node variables 
 var yGimbal
@@ -47,6 +50,7 @@ var oldClipCamera
 var newDistance
 var cam_right
 var cam_up
+var gimbal_offset
 
 # we use this array to store the distances of each ClipCamera at runtime so we don't have to worry about 
 # swapping and changing around values
@@ -58,7 +62,6 @@ var viewcam_distance_array = []
 var clipcam_offset_array = []
 
 var clipCamera = true
-var inConfinedSpace = false
 
 # use this to switch between debug camera and regular view camera
 var isDebugCameraActive = false
@@ -99,6 +102,9 @@ func _ready():
 	
 	# set the view camera to the local z axis of the first clip cam
 	viewCam.transform.origin.z = get_node(cam_array[0]).transform.origin.z
+	
+	# get the gimbal offset to accurately position the gimbal
+	gimbal_offset = yGimbal.transform.origin - get_parent().transform.origin
 
 
 func _process(delta):
@@ -108,7 +114,7 @@ func _process(delta):
 	_switch_camera()
 	
 	# update the gimbal's position to the origin of the player
-	yGimbal.transform.origin = get_parent().transform.origin
+	yGimbal.transform.origin = get_parent().transform.origin + gimbal_offset
 
 func _get_input(delta):
 	
@@ -123,7 +129,7 @@ func _get_input(delta):
 	# clamp the camera so it can't rotate too far south or north, yeah
 	
 	var xGimbalRotation = xGimbal.rotation_degrees
-	xGimbalRotation.x = clamp(xGimbalRotation.x, -80, 80)
+	xGimbalRotation.x = clamp(xGimbalRotation.x, MinCameraAngleLimit, MaxCameraAngleLimit)
 	xGimbal.rotation_degrees = xGimbalRotation
 	
 	# zoom the camera out or in
@@ -131,6 +137,8 @@ func _get_input(delta):
 		zoom += 1
 		if zoom > 2:
 			zoom = 0
+			
+		print(str(clipcam_offset_array[zoom]))
 
 func _update_camera():
 	# store the current ClipCamera
@@ -152,7 +160,8 @@ func _update_camera():
 		# calculate distance
 		var distance_between = (viewCam.global_transform.origin - ray_cast.collider.global_transform.origin)
 		
-		if distance_between.length() < MaxOccludeDistance*viewcam_distance_array[zoom]:
+		if distance_between.length() < MaxOccludeDistance-x_rot:
+			
 			clipCamera = true
 		else:
 			clipCamera = false
@@ -165,9 +174,13 @@ func _update_camera():
 
 			# update the viewcam's local z position to the current clip cam's PARENT node's local z,
 			# then subtract the current clip cam's clip offset multiplied by ClipDistanceMultiplier
-			viewCam.transform.origin.z = lerp(viewCam.transform.origin.z,
-			current_clip_cam.get_parent().transform.origin.z - clip_offset * ClipDistanceMultiplier,
-			LerpWeight * 10)
+			
+			if EnablePullAheadSmoothing:
+				viewCam.transform.origin.z = lerp(viewCam.transform.origin.z,
+				clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier,
+				PullAheadSmoothingWeight)
+			else:
+				viewCam.transform.origin.z = clipcam_offset_array[zoom] - clip_offset * ClipDistanceMultiplier
 		
 
 	# calculate the distance from the camera back to the player.
@@ -178,12 +191,13 @@ func _update_camera():
 		var distance_between2 = (viewCam.global_transform.origin - get_parent().global_transform.origin)
 			
 		if distance_between2.length() < viewcam_distance_array[zoom]:
-			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z
-	elif current_clip_cam.get_clip_offset() == 0:
-		current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
+#			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z
+			viewCam.transform.origin.z = distance_between2.length()
+#	elif current_clip_cam.get_clip_offset() == 0:
+#		current_clip_cam.get_parent().transform.origin.z = viewcam_distance_array[zoom]
 
 	# set the z position of the viewCam to the lerped distance
-	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, viewcam_distance_array[zoom] + clipcam_offset_array[zoom], LerpWeight)
+	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, clipcam_offset_array[zoom], LerpWeight)
 	
 func _update_active_clip_camera():
 	
