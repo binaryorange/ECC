@@ -22,6 +22,14 @@ export (float) var LerpWeight = 0.03
 # change this if you'd like it clip in closer, further away, or even BACKWARDS.
 export (float) var ClipDistanceMultiplier = 1.15
 
+# we use this to modify the exact distance the target will move when clipping.
+# helps ensure that we still clip accurately in tight spots.
+export (float) var SpringArmDistanceMultiplier = 0.1
+
+# we will move the camera's target back to 0 if we exceed this value in the xGimbal's
+# x rotation value.  Useful to ensure accurate clipping when looking down at the player.
+export (float) var LookUpAngleThreshold = -20
+
 # the minimum camera angle limit (default is -70)
 export (float) var MinCameraAngleLimit = -70
 
@@ -129,8 +137,6 @@ func _get_input(delta):
 		zoom += 1
 		if zoom > 2:
 			zoom = 0
-			
-		print(str(clipcam_distance_array[zoom]))
 
 func _update_camera():
 	# store the current ClipCamera
@@ -155,14 +161,24 @@ func _update_camera():
 			viewCam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom] - clip_offset * ClipDistanceMultiplier
 		
 
-	# if we are at a zoom level greater than 0, calculare the distance from the camera to the player,
+	# if we are at a zoom level greater than 0, calculate the distance from the camera to the player,
 	# then subtract that distance divided by 2 from the camera's local z position to treat the 
 	# camera target like a spring.
 	if zoom > 0:
 		
 		var distance_from_player = (viewCam.global_transform.origin - get_parent().global_transform.origin)
-		if clip_offset > 0:
-			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_from_player.length()/2
+		
+		# if we are rotating up, move the target forward to a max value of 0 so that if the player goes under any overhanging geometry,
+		# we will clip through as expected.
+		if x_rot < LookUpAngleThreshold:
+			current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom] + x_rot/2
+			if current_clip_cam.get_parent().transform.origin.z <= 0:
+				current_clip_cam.get_parent().transform.origin.z = 0
+			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
+		elif clip_offset > 0:
+	
+			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_from_player.length() * SpringArmDistanceMultiplier
+			
 			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
 		else:
 			
@@ -180,25 +196,39 @@ func _update_active_clip_camera():
 		get_node(cam_array[0]).set_clip_to_bodies(true)
 		get_node(cam_array[1]).set_clip_to_bodies(false)
 		get_node(cam_array[2]).set_clip_to_bodies(false)
+		
+		get_node(cam_array[0]).get_parent().visible = true
+		get_node(cam_array[1]).get_parent().visible = false
+		get_node(cam_array[2]).get_parent().visible = false
+		
 		print(get_node(cam_array[0]).name + ": Clipping set to: " + str(get_node(cam_array[0]).is_clip_to_bodies_enabled()))
+		
 		
 	elif zoom == 1 and !get_node(cam_array[1]).is_clip_to_bodies_enabled():
 		get_node(cam_array[0]).set_clip_to_bodies(false)
 		get_node(cam_array[1]).set_clip_to_bodies(true)
 		get_node(cam_array[2]).set_clip_to_bodies(false)
+		
+		get_node(cam_array[0]).get_parent().visible = false
+		get_node(cam_array[1]).get_parent().visible = true
+		get_node(cam_array[2]).get_parent().visible = false
 		print(get_node(cam_array[1]).name + ": Clipping set to: " + str(get_node(cam_array[1]).is_clip_to_bodies_enabled()))
 		
 	elif zoom == 2 and !get_node(cam_array[2]).is_clip_to_bodies_enabled():
 		get_node(cam_array[0]).set_clip_to_bodies(false)
 		get_node(cam_array[1]).set_clip_to_bodies(false)
 		get_node(cam_array[2]).set_clip_to_bodies(true)
+		
+		get_node(cam_array[0]).get_parent().visible = false
+		get_node(cam_array[1]).get_parent().visible = false
+		get_node(cam_array[2]).get_parent().visible = true
 		print(get_node(cam_array[2]).name + ": Clipping set to: " + str(get_node(cam_array[2]).is_clip_to_bodies_enabled()))
 		
 func _switch_camera():
 	if Input.is_action_just_pressed("switch_camera_to_debug"):
 		# flip the bool
 		isDebugCameraActive = !isDebugCameraActive
-		get_parent().get_node("DebugCamera").current = isDebugCameraActive
+		get_node("XGimbal/DebugCamera").current = isDebugCameraActive
 		
 		# flip it back here...
 		viewCam.current = !isDebugCameraActive

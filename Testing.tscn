@@ -182,3 +182,23 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Cylinder3/Cylinder"]
 shape = SubResource( 10 )
+
+[node name="Cylinder4" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 5, 4, 5 )
+mesh = SubResource( 9 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder4/Cylinder"]
+shape = SubResource( 10 )
+
+[node name="Cylinder5" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 5, 4, 13 )
+mesh = SubResource( 9 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder5/Cylinder"]
+shape = SubResource( 10 )
