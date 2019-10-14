@@ -71,6 +71,9 @@ transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.25, 0, 1.25, 1 )
 mesh = SubResource( 11 )
 material/0 = null
 
+[node name="DebugCamera" type="Camera" parent="."]
+transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 16.31, 3, -5.48363e-006 )
+
 [node name="YGimbal" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 1 )
 script = ExtResource( 1 )
@@ -81,7 +84,7 @@ ClippedCameraException = NodePath("..")
 cam_array = [ NodePath("XGimbal/CamTarget1/ClipCam1"), NodePath("XGimbal/CamTarget2/ClipCam2"), NodePath("XGimbal/CamTarget3/ClipCam3") ]
 ViewCam = NodePath("XGimbal/ViewCam")
 ClipDistanceMultiplier = 1.5
-SpringArmDistanceMultiplier = 0.3
+SpringArmDistanceMultiplier = 0.1
 LookUpAngleThreshold = 0.0
 MaxCameraAngleLimit = 42.5
 EnablePullAheadSmoothing = true
@@ -147,6 +150,3 @@ process_mode = 1
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 mesh = SubResource( 10 )
 material/0 = null
-
-[node name="DebugCamera" type="Camera" parent="YGimbal/XGimbal"]
-transform = Transform( -2.8213e-007, 0, -1, 0, 1, 0, 1, 0, -2.8213e-007, -16.81, 3, 1 )

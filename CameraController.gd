@@ -168,23 +168,31 @@ func _update_camera():
 		
 		var distance_from_player = (viewCam.global_transform.origin - get_parent().global_transform.origin)
 		
-		# if we are rotating up, move the target forward to a max value of 0 so that if the player goes under any overhanging geometry,
-		# we will clip through as expected.
-		if x_rot < LookUpAngleThreshold:
-			current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom] + x_rot/2
+		
+		if clip_offset > 0:
+	
+			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_from_player.length()/2 + x_rot/4 * SpringArmDistanceMultiplier
+			
 			if current_clip_cam.get_parent().transform.origin.z <= 0:
 				current_clip_cam.get_parent().transform.origin.z = 0
-			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
-		elif clip_offset > 0:
-	
-			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_from_player.length() * SpringArmDistanceMultiplier
 			
 			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
 		else:
 			
-			# set the clip camera and its target back to its previous values
-			current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom]
-			current_clip_cam.transform.origin.z = clipcam_distance_array[zoom]
+			# if we are rotating up, move the target forward to a max value of 0 so that if the player goes under any overhanging geometry,
+			# we will clip through as expected.
+			if x_rot < LookUpAngleThreshold:
+				current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom] + x_rot/4
+				
+				if current_clip_cam.get_parent().transform.origin.z <= 0:
+					current_clip_cam.get_parent().transform.origin.z = 0
+				
+				current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
+			else:
+			
+				# set the clip camera and its target back to its previous values
+				current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom]
+				current_clip_cam.transform.origin.z = clipcam_distance_array[zoom]
 
 	# set the z position of the viewCam to the lerped distance
 	viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom], LerpWeight)
@@ -228,7 +236,7 @@ func _switch_camera():
 	if Input.is_action_just_pressed("switch_camera_to_debug"):
 		# flip the bool
 		isDebugCameraActive = !isDebugCameraActive
-		get_node("XGimbal/DebugCamera").current = isDebugCameraActive
+		get_parent().get_node("DebugCamera").current = isDebugCameraActive
 		
 		# flip it back here...
 		viewCam.current = !isDebugCameraActive
