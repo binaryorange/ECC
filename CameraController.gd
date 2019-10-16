@@ -140,13 +140,16 @@ func _get_input(delta):
 
 func _update_camera():
 	# store the current ClipCamera
-	var current_clip_cam = get_node(cam_array[zoom])
+	var clip_cam = get_node(cam_array[zoom])
+	
+	# store the clip cam's parent
+	var clip_cam_parent = get_node(cam_array[zoom]).get_parent()
 	
 	# store the xGimbal's x rotation
 	var x_rot = xGimbal.rotation_degrees.x
 	
 	# store the clip offset of the current clip camera
-	var clip_offset = current_clip_cam.get_clip_offset()
+	var clip_offset = clip_cam.get_clip_offset()
 
 	if clip_offset > 0:
 
@@ -159,40 +162,39 @@ func _update_camera():
 			PullAheadSmoothingWeight)
 		else:
 			viewCam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom] - clip_offset * ClipDistanceMultiplier
-		
+	else:
+		viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom], LerpWeight)
 
 	# if we are at a zoom level greater than 0, calculate the distance from the camera to the player,
 	# then subtract that distance divided by 2 from the camera's local z position to treat the 
 	# camera target like a spring.
 	if zoom > 0:
 		
+		# store the current distance between the camera and the player
 		var distance_from_player = (viewCam.global_transform.origin - get_parent().global_transform.origin)
 		
-		
-		if clip_offset > 0:
-			current_clip_cam.get_parent().transform.origin.z = viewCam.transform.origin.z - distance_from_player.length()/2 * SpringArmDistanceMultiplier
-
-			
-			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
-			
 		# if we are rotating up, move the target forward to a max value of 0 so that if the player goes under any overhanging geometry,
-		# we will clip through as expected.
-		if x_rot < LookUpAngleThreshold:
-			current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom] + x_rot/4
+		# we will clip through as expected
+#		if x_rot <= LookUpAngleThreshold:
+#			# now check if we are colliding
+#			if clip_offset > 0:
+#				clip_cam_parent.transform.origin.z = clipcam_target_distance_array[zoom] + 1 - distance_from_player.length() + x_rot/8
+#			else:
+#				clip_cam_parent.transform.origin.z = clipcam_target_distance_array[zoom] + x_rot/8
+#		elif x_rot > LookUpAngleThreshold:
+#			# now check if we are colliding
+#			if clip_offset > 0:
+#				clip_cam_parent.transform.origin.z = clipcam_target_distance_array[zoom] + 1 - distance_from_player.length() - abs(x_rot/8)
+#			else:
+#				clip_cam_parent.transform.origin.z = clipcam_target_distance_array[zoom] - abs(x_rot/8)
 			
-			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
-		elif x_rot > LookUpAngleThreshold:
-			current_clip_cam.get_parent().transform.origin.z = clipcam_target_distance_array[zoom] - abs(x_rot/4)
-			
-			current_clip_cam.transform.origin.z = clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom]
-
-	# set the z position of the viewCam to the lerped distance
-	if current_clip_cam.get_clip_offset() == 0:
-		viewCam.transform.origin.z = lerp(viewCam.transform.origin.z, clipcam_target_distance_array[zoom] + clipcam_distance_array[zoom], LerpWeight)
+		# set the current clip cam's position 
+		if clip_offset == 0:
+			clip_cam.transform.origin.z = viewCam.transform.origin.z + 4 - clip_cam_parent.transform.origin.z
 		
-	# limit the camera's local z position
-	if current_clip_cam.get_parent().transform.origin.z <= 0:
-		current_clip_cam.get_parent().transform.origin.z = 0
+		# limit the camera's local z position
+		if clip_cam_parent.transform.origin.z <= 2:
+			clip_cam_parent.transform.origin.z = 2
 	
 func _update_active_clip_camera():
 	
