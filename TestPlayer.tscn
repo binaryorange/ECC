@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://CameraController.gd" type="Script" id=1]
+[ext_resource path="res://helper_mesh.tres" type="Material" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
+[ext_resource path="res://ECC_Controller.gd" type="Script" id=3]
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 1, 2, 1 )
@@ -11,52 +12,7 @@ size = Vector3( 2, 4, 2 )
 
 [sub_resource type="CapsuleMesh" id=3]
 
-[sub_resource type="SpatialMaterial" id=4]
-albedo_color = Color( 1, 0.584314, 0, 1 )
-emission_enabled = true
-emission = Color( 1, 0.866667, 0, 1 )
-emission_energy = 1.0
-emission_operator = 0
-emission_on_uv2 = false
-
-[sub_resource type="SphereMesh" id=5]
-material = SubResource( 4 )
-
-[sub_resource type="CubeMesh" id=6]
-
-[sub_resource type="SpatialMaterial" id=7]
-albedo_color = Color( 0.12549, 1, 0, 1 )
-emission_enabled = true
-emission = Color( 0, 1, 0.133333, 1 )
-emission_energy = 1.0
-emission_operator = 0
-emission_on_uv2 = false
-
-[sub_resource type="SphereMesh" id=8]
-
-[sub_resource type="SpatialMaterial" id=9]
-albedo_color = Color( 0, 0.647059, 1, 1 )
-emission_enabled = true
-emission = Color( 0, 0.858824, 1, 1 )
-emission_energy = 1.0
-emission_operator = 0
-emission_on_uv2 = false
-
-[sub_resource type="CubeMesh" id=10]
-material = SubResource( 9 )
-
-[sub_resource type="SphereMesh" id=11]
-
-[sub_resource type="SpatialMaterial" id=12]
-albedo_color = Color( 1, 0, 0, 1 )
-emission_enabled = true
-emission = Color( 1, 0, 0, 1 )
-emission_energy = 1.0
-emission_operator = 0
-emission_on_uv2 = false
-
-[sub_resource type="CubeMesh" id=13]
-material = SubResource( 12 )
+[sub_resource type="CylinderMesh" id=4]
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
@@ -77,88 +33,52 @@ material/0 = null
 
 [node name="DebugCamera" type="Camera" parent="."]
 transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 16.31, 3, -5.48363e-006 )
-
-[node name="YGimbal" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 1 )
-script = ExtResource( 1 )
-__meta__ = {
-"_editor_description_": ""
-}
-ClippedCameraException = NodePath("..")
-cam_array = [ NodePath("XGimbal/CamTarget1/ClipCam1"), NodePath("XGimbal/CamTarget2/ClipCam2"), NodePath("XGimbal/CamTarget3/ClipCam3") ]
-ViewCam = NodePath("XGimbal/ViewCam")
-ClipDistanceMultiplier = 1.2
-LookUpAngleThreshold = 0.0
-MaxCameraAngleLimit = 35.0
-EnablePullAheadSmoothing = true
-
-[node name="XGimbal" type="Spatial" parent="YGimbal"]
-transform = Transform( -1, 0, -3.25841e-007, 0, 1, 0, 3.25841e-007, 0, -1, 0, 0, 0 )
-
-[node name="ViewCam" type="Camera" parent="YGimbal/XGimbal"]
-transform = Transform( 1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 2, 4 )
 current = true
 
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/ViewCam"]
-transform = Transform( 0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0 )
-mesh = SubResource( 5 )
-material/0 = null
+[node name="Y Gimbal" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 1 )
+script = ExtResource( 3 )
+ViewCamera = NodePath("X Gimbal/ViewCamera")
+ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
+ClipCameraException = NodePath("..")
+ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
 
-[node name="CamTarget1" type="Spatial" parent="YGimbal/XGimbal"]
-transform = Transform( 1, 0, 0, 0, 1, 2.98023e-008, 0, -2.98023e-008, 1, 0, 2, 0 )
-__meta__ = {
-"_edit_group_": true
-}
+[node name="X Gimbal" type="Spatial" parent="Y Gimbal"]
 
-[node name="ClipCam1" type="ClippedCamera" parent="YGimbal/XGimbal/CamTarget1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
-doppler_tracking = 1
-near = 0.01
-process_mode = 1
-
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/CamTarget1"]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-mesh = SubResource( 6 )
-material/0 = SubResource( 7 )
-
-[node name="CamTarget2" type="Spatial" parent="YGimbal/XGimbal"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="ClipCam2" type="ClippedCamera" parent="YGimbal/XGimbal/CamTarget2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.05636e-006, 0, 8 )
-doppler_tracking = 1
-process_mode = 1
-
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/CamTarget2/ClipCam2"]
+[node name="HelperMesh" type="MeshInstance" parent="Y Gimbal/X Gimbal"]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
-mesh = SubResource( 8 )
-material/0 = null
-
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/CamTarget2"]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-mesh = SubResource( 10 )
-material/0 = null
-
-[node name="CamTarget3" type="Spatial" parent="YGimbal/XGimbal"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
+mesh = SubResource( 4 )
+material/0 = ExtResource( 1 )
 __meta__ = {
-"_edit_group_": true
+"_editor_description_": "This HelperMesh represents the gimbal setup's CENTER, and thus its ZERO POSITION.
+
+Use this to to set where you want your camera to rotate  arond the player - DO NOT MOVE THE CAMERAS THEMSELVES!!!
+"
 }
 
-[node name="ClipCam3" type="ClippedCamera" parent="YGimbal/XGimbal/CamTarget3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3.09944e-006, 0, 12 )
+[node name="ViewCamera" type="Camera" parent="Y Gimbal/X Gimbal"]
+transform = Transform( -1, -7.88282e-008, 3.16162e-007, 0, 0.970296, 0.241922, -3.25841e-007, 0.241922, -0.970296, 0, 1, -4 )
+current = true
+__meta__ = {
+"_editor_description_": "This is the camera that actually sees the player.
+
+We feed it the positioning information from the ClippedCamera node.
+
+Make sure it matches the rotational "
+}
+
+[node name="ClipCameraTarget" type="Spatial" parent="Y Gimbal/X Gimbal"]
+
+[node name="ClippedCamera" type="ClippedCamera" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
+transform = Transform( -1, 7.88282e-008, -3.16162e-007, 0, 0.970296, 0.241922, 3.25841e-007, 0.241922, -0.970296, 0, 1, -4 )
 doppler_tracking = 1
 process_mode = 1
 
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/CamTarget3/ClipCam3"]
-transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
-mesh = SubResource( 11 )
-material/0 = null
+[node name="Zoom1" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4 )
 
-[node name="MeshInstance" type="MeshInstance" parent="YGimbal/XGimbal/CamTarget3"]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-mesh = SubResource( 13 )
-material/0 = null
+[node name="Zoom2" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8 )
+
+[node name="Zoom3" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
