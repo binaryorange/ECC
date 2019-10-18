@@ -12,42 +12,60 @@ size = Vector3( 2, 4, 2 )
 
 [sub_resource type="CapsuleMesh" id=3]
 
-[sub_resource type="CylinderMesh" id=4]
+[sub_resource type="CylinderMesh" id=7]
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
 ]]
 script = ExtResource( 2 )
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
+[node name="CollisionShape" type="CollisionShape" parent="." groups=[
+"Player",
+]]
 shape = SubResource( 1 )
 
-[node name="Body" type="MeshInstance" parent="."]
+[node name="Body" type="MeshInstance" parent="." groups=[
+"Player",
+]]
 mesh = SubResource( 2 )
 material/0 = null
 
-[node name="Nose" type="MeshInstance" parent="Body"]
+[node name="Nose" type="MeshInstance" parent="Body" groups=[
+"Player",
+]]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.25, 0, 1.25, 1 )
 mesh = SubResource( 3 )
 material/0 = null
 
-[node name="DebugCamera" type="Camera" parent="."]
-transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 16.31, 3, -5.48363e-006 )
-current = true
-
-[node name="Y Gimbal" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 1 )
+[node name="Y Gimbal" type="Spatial" parent="." groups=[
+"Player",
+]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 2, 0.25 )
 script = ExtResource( 3 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 ClipCameraException = NodePath("..")
+RayCastNode = NodePath("X Gimbal/RayCast")
+RaycastPoint = NodePath("X Gimbal/ClipCameraTarget/RaycastPoint")
 ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
+RotationSpeed = 1.75
+MaxOccludeDistance = 3.0
+MaxCameraAngle = 70.0
+MinCameraAngle = -45.0
+ClipOffsetMultiplier = 1.0
+ViewCamDistanceModifier = 1.5
+RayCastCastDistance = Vector3( 0, 0, 9 )
+EnablePullAheadSmoothing = true
 
-[node name="X Gimbal" type="Spatial" parent="Y Gimbal"]
+[node name="X Gimbal" type="Spatial" parent="Y Gimbal" groups=[
+"Player",
+]]
 
-[node name="HelperMesh" type="MeshInstance" parent="Y Gimbal/X Gimbal"]
+[node name="HelperMesh" type="MeshInstance" parent="Y Gimbal/X Gimbal" groups=[
+"Player",
+]]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
-mesh = SubResource( 4 )
+mesh = SubResource( 7 )
 material/0 = ExtResource( 1 )
 __meta__ = {
 "_editor_description_": "This HelperMesh represents the gimbal setup's CENTER, and thus its ZERO POSITION.
@@ -56,9 +74,13 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 "
 }
 
-[node name="ViewCamera" type="Camera" parent="Y Gimbal/X Gimbal"]
-transform = Transform( -1, -7.88282e-008, 3.16162e-007, 0, 0.970296, 0.241922, -3.25841e-007, 0.241922, -0.970296, 0, 1, -4 )
+[node name="ViewCamera" type="Camera" parent="Y Gimbal/X Gimbal" groups=[
+"Player",
+]]
+transform = Transform( -1, 5.65818e-008, -3.20891e-007, 0, 0.984808, 0.173648, 3.25841e-007, 0.173648, -0.984808, 0, 1, -5 )
 current = true
+fov = 60.0
+near = 0.01
 __meta__ = {
 "_editor_description_": "This is the camera that actually sees the player.
 
@@ -67,18 +89,41 @@ We feed it the positioning information from the ClippedCamera node.
 Make sure it matches the rotational "
 }
 
-[node name="ClipCameraTarget" type="Spatial" parent="Y Gimbal/X Gimbal"]
+[node name="RayCast" type="RayCast" parent="Y Gimbal/X Gimbal"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9 )
+enabled = true
+cast_to = Vector3( 0, 0, 5 )
 
-[node name="ClippedCamera" type="ClippedCamera" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
-transform = Transform( -1, 7.88282e-008, -3.16162e-007, 0, 0.970296, 0.241922, 3.25841e-007, 0.241922, -0.970296, 0, 1, -4 )
+[node name="ClipCameraTarget" type="Spatial" parent="Y Gimbal/X Gimbal" groups=[
+"Player",
+]]
+
+[node name="ClippedCamera" type="ClippedCamera" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
+"Player",
+]]
+transform = Transform( -1, 5.65818e-008, -3.20891e-007, 0, 0.984808, 0.173648, 3.25841e-007, 0.173648, -0.984808, 3.27826e-007, 1, -5 )
 doppler_tracking = 1
+fov = 60.0
+near = 0.01
+margin = 10.0
 process_mode = 1
 
-[node name="Zoom1" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4 )
+[node name="RaycastPoint" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
 
-[node name="Zoom2" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8 )
+[node name="Zoom1" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
+"Player",
+]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5 )
 
-[node name="Zoom3" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
+[node name="Zoom2" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
+"Player",
+]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -9 )
+
+[node name="Zoom3" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
+"Player",
+]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -13 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 7, 4, 4.37114e-007 )
