@@ -53,7 +53,7 @@ ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/C
 RotationSpeed = 1.75
 MaxOccludeDistance = 5.0
 MinCameraAngle = -45.0
-ClipOffsetMultiplier = 1.0
+ClipOffsetMultiplier = 1.05
 ViewCamDistanceModifier = 1.5
 
 [node name="X Gimbal" type="Spatial" parent="Y Gimbal" groups=[

@@ -1,10 +1,5 @@
 extends Spatial
 
-""" ------ Welcome to ECCS - Enhanced ClippedCamera Setup! ------ 
-	--  This is a simple Gimbal setup, which will allow you to --
-	-- drop this scene into your player.tscn, and go from there! --
-"""
-
 # first set up our external variables that we want to edit through the inspector
 
 # we will first export nodepaths
@@ -44,18 +39,13 @@ export (float) var ClipOffsetMultiplier = 1
 # export our view cam distance modifier
 export (float) var ViewCamDistanceModifier = 0.15
 
-# allow the user to determine if there will be smoothing when pulling ahead
-export (bool) var EnablePullAheadSmoothing = false
-export (float) var PullAheadWeight = 0.2
-
-
 # our local variables
 var cam_up : float = 0.0
 var cam_right : float = 0.0
 var zoom : int = 0
 var clip_cam
 var view_cam 
-var is_clipping : bool = true
+var can_clip : bool = true
 var y_gimbal
 var x_gimbal
 var max_zoom_level
@@ -170,39 +160,32 @@ func _check_for_occlusion():
 			print (str(distance) + "/" + str(MaxOccludeDistance))
 	
 			if distance < MaxOccludeDistance:
-				is_clipping = true
+				can_clip = true
 			else:
 				# check to see if we are rotating the camera. if we aren't, clip then
 				if cam_right != 0:
-					is_clipping = false
+					can_clip = false
 				else:
 					# check to see if we are in a confined space
 					if is_in_confined_space:
-						is_clipping = true
+						can_clip = true
 					else:
-						is_clipping = false
+						can_clip = false
 						
 	else:
-		is_clipping = true
+		can_clip = true
 						
 	# if we are clipping, set the view cam's local z to the clip cam's information
-	if is_clipping:
+	if can_clip:
 		
 		# get the clip cam's clip offset
 		var clip_offset = clip_cam.get_clip_offset()
 	
 		# set the view cam's position
 		if clip_offset > 0:
-			
-			# smooth out the clipping of the camera
-			if EnablePullAheadSmoothing:
-				view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
-				zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier, 
-				PullAheadWeight)
-			else:
-				
-				# instantly clip to show the target
-				view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
+
+			# show the target
+			view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
 				
 		else:
 			view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 

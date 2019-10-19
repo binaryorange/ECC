@@ -147,7 +147,7 @@ __meta__ = {
 shape = SubResource( 6 )
 
 [node name="Ceiling5" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -0.1, 0, 10, -4.37114e-009, 0, 0, 0, 10, -13, 10, -10 )
+transform = Transform( -4.37114e-007, -0.5, 0, 10, -2.18557e-008, 0, 0, 0, 10, -13, 10, -10 )
 mesh = SubResource( 4 )
 material/0 = SubResource( 5 )
 __meta__ = {
