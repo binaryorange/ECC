@@ -22,8 +22,6 @@ export (NodePath) var ClipCameraException
 # this will capture our raycast node
 export (NodePath) var RayCastNode
 
-export (NodePath) var RaycastPoint
-
 # export our zoom levels in an array
 export(Array, NodePath) var ZoomLevels
 
@@ -46,8 +44,6 @@ export (float) var ClipOffsetMultiplier = 1
 # export our view cam distance modifier
 export (float) var ViewCamDistanceModifier = 0.15
 
-export (Vector3) var RayCastCastDistance
-
 # allow the user to determine if there will be smoothing when pulling ahead
 export (bool) var EnablePullAheadSmoothing = false
 export (float) var PullAheadWeight = 0.2
@@ -66,7 +62,8 @@ var max_zoom_level
 var zoom_level_array = []
 var gimbal_offset
 var raycast
-var raycast_point
+var x_rot
+var is_in_confined_space = false
 
 # hide these when we are running the game
 var helper_mesh
@@ -81,7 +78,6 @@ func _ready():
 	clip_cam = get_node(ClipCamera)
 	helper_mesh = $"X Gimbal/HelperMesh"
 	raycast = get_node(RayCastNode)
-	raycast_point = get_node(RaycastPoint)
 	
 	# set our helper meshes to be invisible
 	helper_mesh.visible = false
@@ -96,13 +92,13 @@ func _ready():
 	for z in ZoomLevels.size():
 		zoom_level_array.insert(z, get_node(ZoomLevels[z]).transform.origin.z)
 		
-	
 	# ensure we set the max zoom level for the zoom array
 	max_zoom_level = ZoomLevels.size()
 	
 	# set the default zoom level of the cameras
 	clip_cam.transform.origin.z = zoom_level_array[0]
 	view_cam.transform.origin.z += ViewCamDistanceModifier
+	raycast.transform.origin.z += ViewCamDistanceModifier
 
 	# add the ClipCameraException node
 	clip_cam.add_exception(get_node(ClipCameraException))
@@ -156,32 +152,39 @@ func _update_camera(delta):
 # check for occluding objects by casting a ray back to the player
 func _check_for_occlusion():
 	# store the gimbal's x rotation
-	var x_rot = x_gimbal.rotation_degrees.x
+	x_rot = x_gimbal.rotation_degrees.x
+	
+	# ensure the raycast node is positioned at the appropriate zoom level
+	raycast.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier
 	
 	# cast a ray from the RayCast node
-	raycast.set_cast_to(RayCastCastDistance)
+	raycast.set_cast_to(Vector3(0, 0, abs(zoom_level_array[zoom] + ViewCamDistanceModifier)))
 	
 	# check if it's hitting anything
 	if raycast.is_colliding():
 		if !raycast.get_collider().is_in_group("Player"):
-			print("hit " + raycast.get_collider().name)
 			
 			var hit_pos = raycast.get_collision_point()
-			var difference = (view_cam.global_transform.origin - hit_pos)
+			var difference = (raycast.global_transform.origin - hit_pos)
 			var distance = difference.length()
+			print (str(distance) + "/" + str(MaxOccludeDistance))
 	
 			if distance < MaxOccludeDistance:
 				is_clipping = true
 			else:
 				# check to see if we are rotating the camera. if we aren't, clip then
-				if cam_right == 0 and cam_up == 0:
-					is_clipping = true
-				else:
+				if cam_right != 0:
 					is_clipping = false
+				else:
+					# check to see if we are in a confined space
+					if is_in_confined_space:
+						is_clipping = true
+					else:
+						is_clipping = false
+						
 	else:
-		# otherwise, always make sure we clip!
 		is_clipping = true
-	
+						
 	# if we are clipping, set the view cam's local z to the clip cam's information
 	if is_clipping:
 		
@@ -200,8 +203,17 @@ func _check_for_occlusion():
 				
 				# instantly clip to show the target
 				view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
-			
+				
 		else:
 			view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
 			zoom_level_array[zoom] + ViewCamDistanceModifier, 
 			LerpWeight)
+
+# tells us when the player has entered a confined space
+func _on_ConfinedSpaceArea_body_entered(body):
+	is_in_confined_space = true
+
+
+# tells us when the player has exited a confined space
+func _on_ConfinedSpaceArea_body_exited(body):
+	is_in_confined_space = false
