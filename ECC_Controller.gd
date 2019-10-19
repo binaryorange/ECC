@@ -14,9 +14,6 @@ export (NodePath) var ClipCamera
 # so that we don't clip to ourselves!
 export (NodePath) var ClipCameraException
 
-# this will capture our raycast node
-export (NodePath) var RayCastNode
-
 # export our zoom levels in an array
 export(Array, NodePath) var ZoomLevels
 
@@ -26,8 +23,8 @@ export (float) var LerpWeight = 0.03
 # export our rotational speed
 export (float) var RotationSpeed = 2.0
 
-# export our max occlude distance
-export (float) var MaxOccludeDistance = 5.0
+# export our collision probe size
+export (float) var CollisionProbeSize = 1.0
 
 # export our max and min camera angles
 export (float) var MaxCameraAngle = 70
@@ -40,20 +37,21 @@ export (float) var ClipOffsetMultiplier = 1
 export (float) var ViewCamDistanceModifier = 0.15
 
 # our local variables
-var cam_up : float = 0.0
-var cam_right : float = 0.0
-var zoom : int = 0
+var cam_up = 0.0
+var cam_right = 0.0
+var zoom  = 0
 var clip_cam
 var view_cam 
-var can_clip : bool = true
+var can_clip = false
 var y_gimbal
 var x_gimbal
 var max_zoom_level
 var zoom_level_array = []
 var gimbal_offset
-var raycast
-var x_rot
 var is_in_confined_space = false
+var collision_probe_hit = false
+var collision_probe_shape
+var is_clipping = false
 
 # hide these when we are running the game
 var helper_mesh
@@ -67,7 +65,7 @@ func _ready():
 	view_cam = get_node(ViewCamera)
 	clip_cam = get_node(ClipCamera)
 	helper_mesh = $"X Gimbal/HelperMesh"
-	raycast = get_node(RayCastNode)
+	collision_probe_shape = $"X Gimbal/ViewCamera/CanClipDetector/CollisionShape"
 	
 	# set our helper meshes to be invisible
 	helper_mesh.visible = false
@@ -77,22 +75,28 @@ func _ready():
 	
 	# store the offset of the gimbal relative to its parent node
 	gimbal_offset = self.transform.origin - get_parent().transform.origin
+	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
 	
-	# add the zoom nodes to the array
+	# add the zoom nodes local z transform to the array
 	for z in ZoomLevels.size():
 		zoom_level_array.insert(z, get_node(ZoomLevels[z]).transform.origin.z)
+		print("Added zoom value " + str(zoom_level_array[z]) + " to the zoom array")
 		
 	# ensure we set the max zoom level for the zoom array
 	max_zoom_level = ZoomLevels.size()
+	print("Max Zoom Level set to " + str(max_zoom_level))
 	
 	# set the default zoom level of the cameras
 	clip_cam.transform.origin.z = zoom_level_array[0]
 	view_cam.transform.origin.z += ViewCamDistanceModifier
-	raycast.transform.origin.z += ViewCamDistanceModifier
 
 	# add the ClipCameraException node
 	clip_cam.add_exception(get_node(ClipCameraException))
-	raycast.add_exception(get_node(ClipCameraException))
+	print("Added " + str(get_node(ClipCameraException).name) + " to " + str(get_node(ClipCamera).name) + " as collision exception")
+	
+	# set the size of our collision probe
+	collision_probe_shape.shape.radius = CollisionProbeSize
+	print("Set CollisionProbeSize to: " + str(collision_probe_shape.shape.radius))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -115,13 +119,11 @@ func _get_input():
 			zoom = 0
 		else:
 			zoom += 1
-		
-		print(zoom)
-
+			
 # update the camera's position and rotation
 func _update_camera(delta):
 	
-	# position the gimbal to the player's position, plus the position of the gimbal
+	# position the gimbal to the player's position, plus the offset
 	self.transform.origin = get_parent().transform.origin + gimbal_offset
 	
 	# position the clip cam
@@ -141,40 +143,18 @@ func _update_camera(delta):
 
 # check for occluding objects by casting a ray back to the player
 func _check_for_occlusion():
-	# store the gimbal's x rotation
-	x_rot = x_gimbal.rotation_degrees.x
 	
-	# ensure the raycast node is positioned at the appropriate zoom level
-	raycast.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier
-	
-	# cast a ray from the RayCast node
-	raycast.set_cast_to(Vector3(0, 0, abs(zoom_level_array[zoom] + ViewCamDistanceModifier)))
-	
-	# check if it's hitting anything
-	if raycast.is_colliding():
-		if !raycast.get_collider().is_in_group("Player"):
-			
-			var hit_pos = raycast.get_collision_point()
-			var difference = (raycast.global_transform.origin - hit_pos)
-			var distance = difference.length()
-			print (str(distance) + "/" + str(MaxOccludeDistance))
-	
-			if distance < MaxOccludeDistance:
-				can_clip = true
-			else:
-				# check to see if we are rotating the camera. if we aren't, clip then
-				if cam_right != 0:
-					can_clip = false
-				else:
-					# check to see if we are in a confined space
-					if is_in_confined_space:
-						can_clip = true
-					else:
-						can_clip = false
-						
-	else:
+	# check if the CollisionProbe is hitting anything
+	if collision_probe_hit:
 		can_clip = true
-						
+	else:
+		# check to see if we are in a confined space
+		if is_in_confined_space:
+			can_clip = true
+		else:
+			can_clip = false
+
+		
 	# if we are clipping, set the view cam's local z to the clip cam's information
 	if can_clip:
 		
@@ -183,20 +163,41 @@ func _check_for_occlusion():
 	
 		# set the view cam's position
 		if clip_offset > 0:
-
+			
+			# alert the collision probe that we are clipping
+			is_clipping = true
 			# show the target
 			view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
 				
 		else:
-			view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
-			zoom_level_array[zoom] + ViewCamDistanceModifier, 
-			LerpWeight)
+			is_clipping = false
+			
+	# position the camera to the current zoom level from the zoom level array
+	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
+	zoom_level_array[zoom] + ViewCamDistanceModifier, 
+	LerpWeight)
 
 # tells us when the player has entered a confined space
 func _on_ConfinedSpaceArea_body_entered(body):
-	is_in_confined_space = true
+	if !body.is_in_group("Player") and !is_in_confined_space:
+		is_in_confined_space = true
+		print("In Confined Space: " + str(is_in_confined_space))
 
 
 # tells us when the player has exited a confined space
 func _on_ConfinedSpaceArea_body_exited(body):
-	is_in_confined_space = false
+	if !body.is_in_group("Player") and is_in_confined_space:
+		is_in_confined_space = false
+		print("In Confined Space: " + str(is_in_confined_space))
+
+# this tells us when the camera can clip against walls or other occluding objects
+func _on_CanClipDetector_body_entered(body):
+	if !body.is_in_group("Player") and !collision_probe_hit:
+		collision_probe_hit = true
+		print("CollisionProbeHit: " + str(collision_probe_hit))
+
+# this tells us when the camera has stopped clipping against walls
+func _on_CanClipDetector_body_exited(body):
+	if !body.is_in_group("Player") and !is_clipping and collision_probe_hit:
+		collision_probe_hit = false
+		print("CollisionProbeHit: " + str(collision_probe_hit))
