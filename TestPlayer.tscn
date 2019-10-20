@@ -14,15 +14,16 @@ size = Vector3( 2, 4, 2 )
 
 [sub_resource type="CylinderMesh" id=4]
 
-[sub_resource type="SphereShape" id=6]
+[sub_resource type="SphereShape" id=5]
 
-[sub_resource type="BoxShape" id=5]
+[sub_resource type="BoxShape" id=6]
 extents = Vector3( 0.5, 2.5, 0.5 )
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
 ]]
 script = ExtResource( 2 )
+MoveSpeed = 400.0
 
 [node name="CollisionShape" type="CollisionShape" parent="." groups=[
 "Player",
@@ -52,10 +53,12 @@ ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 ClipCameraException = NodePath("..")
 ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
 RotationSpeed = 1.75
-CollisionProbeSize = 1.0
+CollisionProbeSize = 2.0
 MinCameraAngle = -45.0
-ClipOffsetMultiplier = 1.05
-ViewCamDistanceModifier = 1.0
+ClipOffsetMultiplier = 1.075
+ViewCamDistanceModifier = 1.05
+EnableFollowDelay = true
+EnableMouseInput = true
 
 [node name="X Gimbal" type="Spatial" parent="Y Gimbal" groups=[
 "Player",
@@ -77,7 +80,7 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 [node name="ViewCamera" type="Camera" parent="Y Gimbal/X Gimbal" groups=[
 "Player",
 ]]
-transform = Transform( -1, 0, 3.25841e-007, 0, 1, 0, -3.25841e-007, 0, -1, 0, 0, -5 )
+transform = Transform( -1, 0, 3.25841e-007, 0, 1, 0, -3.25841e-007, 0, -1, 0, 0, -4 )
 current = true
 fov = 60.0
 near = 0.01
@@ -92,13 +95,13 @@ Make sure it matches the rotational "
 [node name="CanClipDetector" type="Area" parent="Y Gimbal/X Gimbal/ViewCamera" groups=[
 "Player",
 ]]
-transform = Transform( -1, 5.65817e-008, -3.20891e-007, 1.25092e-015, 0.984807, 0.173648, 3.25841e-007, 0.173648, -0.984807, 0, -0.174, 1 )
+transform = Transform( -1, 5.65817e-008, -3.20891e-007, 1.25092e-015, 0.984807, 0.173648, 3.25841e-007, 0.173648, -0.984807, 0, -0.174, 0.5 )
 input_ray_pickable = false
 
 [node name="CollisionShape" type="CollisionShape" parent="Y Gimbal/X Gimbal/ViewCamera/CanClipDetector" groups=[
 "Player",
 ]]
-shape = SubResource( 6 )
+shape = SubResource( 5 )
 
 [node name="ClipCameraTarget" type="Spatial" parent="Y Gimbal/X Gimbal" groups=[
 "Player",
@@ -107,7 +110,7 @@ shape = SubResource( 6 )
 [node name="ClippedCamera" type="ClippedCamera" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
 "Player",
 ]]
-transform = Transform( -1, 0, 3.25841e-007, 0, 1, 0, -3.25841e-007, 0, -1, 0, 0, -5 )
+transform = Transform( -1, 0, 3.25841e-007, 0, 1, 0, -3.25841e-007, 0, -1, 0, 0, -4 )
 doppler_tracking = 1
 fov = 60.0
 near = 0.01
@@ -117,17 +120,17 @@ process_mode = 1
 [node name="Zoom1" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
 "Player",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4 )
 
 [node name="Zoom2" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
 "Player",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8 )
 
 [node name="Zoom3" type="Position3D" parent="Y Gimbal/X Gimbal/ClipCameraTarget" groups=[
 "Player",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
 
 [node name="ConfinedSpaceDetector" type="Spatial" parent="Y Gimbal" groups=[
 "Player",
@@ -137,14 +140,13 @@ transform = Transform( 1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0
 [node name="ConfinedSpaceArea" type="Area" parent="Y Gimbal/ConfinedSpaceDetector" groups=[
 "Player",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.38419e-007, -2.98023e-008 )
 gravity_vec = Vector3( 0, 0, 0 )
 
 [node name="Shape" type="CollisionShape" parent="Y Gimbal/ConfinedSpaceDetector/ConfinedSpaceArea" groups=[
 "Player",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
-shape = SubResource( 5 )
+shape = SubResource( 6 )
 
 [node name="Camera" type="Camera" parent="." groups=[
 "Player",

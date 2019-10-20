@@ -36,6 +36,14 @@ export (float) var ClipOffsetMultiplier = 1
 # export our view cam distance modifier
 export (float) var ViewCamDistanceModifier = 0.15
 
+# allow the user to choose if there's a follow delay or not
+export (bool) var EnableFollowDelay = false
+export (float) var FollowDelayWeight = 0.07
+
+# allow the user to choose to allow mouse input if gamepad is not being used
+export (bool) var EnableMouseInput = false
+export (float) var MouseSensitivity = 2
+
 # our local variables
 var cam_up = 0.0
 var cam_right = 0.0
@@ -55,6 +63,8 @@ var is_clipping = false
 
 # hide these when we are running the game
 var helper_mesh
+var mouse_captured = false
+var mouse_moved = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -97,6 +107,11 @@ func _ready():
 	# set the size of our collision probe
 	collision_probe_shape.shape.radius = CollisionProbeSize
 	print("Set CollisionProbeSize to: " + str(collision_probe_shape.shape.radius))
+	
+	# capture the mouse if we have enabled mouse input
+	if EnableMouseInput:
+		mouse_captured = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -105,26 +120,38 @@ func _process(delta):
 
 # get our input for the camera
 func _get_input():
-	# store the right movement
-	cam_right = Input.get_action_strength("cam_look_right") - Input.get_action_strength("cam_look_left")
 	
-	# store the up movement
-	cam_up = Input.get_action_strength("cam_look_down") - Input.get_action_strength("cam_look_up")
-	
-	# zoom the camera
-	if Input.is_action_just_pressed("zoom"):
+	# get joystick movement data if we are not using the mouse
+	if !mouse_captured:
+		# store the right movement
+		cam_right = Input.get_action_strength("cam_look_right") - Input.get_action_strength("cam_look_left")
 		
-		# check that the zoom level isn't past the cap
-		if zoom >= max_zoom_level - 1:
-			zoom = 0
+		# store the up movement
+		cam_up = Input.get_action_strength("cam_look_down") - Input.get_action_strength("cam_look_up")
+		
+		# zoom the camera
+		if Input.is_action_just_pressed("zoom"):
+			_zoom_camera(1)
+				
+	# uncapture or recapture the mouse
+	if Input.is_action_just_pressed("capture_mouse"):
+		mouse_captured = !mouse_captured
+		
+		if mouse_captured:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
-			zoom += 1
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 			
 # update the camera's position and rotation
 func _update_camera(delta):
 	
 	# position the gimbal to the player's position, plus the offset
-	self.transform.origin = get_parent().transform.origin + gimbal_offset
+	if EnableFollowDelay:
+		self.transform.origin = lerp(self.transform.origin, 
+		get_parent().transform.origin + gimbal_offset, 
+		FollowDelayWeight)
+	else:
+		self.transform.origin = get_parent().transform.origin + gimbal_offset
 	
 	# position the clip cam
 	clip_cam.transform.origin.z = zoom_level_array[zoom]
@@ -135,8 +162,12 @@ func _update_camera(delta):
 	x_gimbal.rotation_degrees = x_gimbal_rotation
 	
 	# set the rotational values of the gimbals
-	self.rotate_y(cam_right * RotationSpeed * delta)
-	x_gimbal.rotate_x(cam_up * RotationSpeed * delta)
+	if !mouse_captured:
+		self.rotate_y(cam_right * RotationSpeed * delta)
+		x_gimbal.rotate_x(cam_up * RotationSpeed * delta)
+	elif mouse_captured and mouse_moved:
+		self.rotate_y(cam_right * MouseSensitivity * delta)
+		x_gimbal.rotate_x(cam_up * MouseSensitivity * delta)
 	
 	# now check for occluding geometry
 	_check_for_occlusion()
@@ -176,7 +207,30 @@ func _check_for_occlusion():
 	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
 	zoom_level_array[zoom] + ViewCamDistanceModifier, 
 	LerpWeight)
+	
+	mouse_moved = false
+	
+# support mouse input
+func _input(event):
+	if mouse_captured:
+		if event is InputEventMouseMotion:
+			cam_up = deg2rad(event.relative.y * MouseSensitivity * -1)
+			cam_right = deg2rad(event.relative.x * MouseSensitivity)
+			mouse_moved = true
+			
+		if event is InputEventMouseButton:
+			if event.is_action_pressed("mouse_zoom_out"):
+				_zoom_camera(1)
 
+
+func _zoom_camera(var amount):
+	# check that the zoom level isn't past the cap
+	if zoom >= max_zoom_level - 1:
+		zoom = 0
+	else:
+		zoom += amount
+	print(zoom)
+	
 # tells us when the player has entered a confined space
 func _on_ConfinedSpaceArea_body_entered(body):
 	if !body.is_in_group("Player") and !is_in_confined_space:
