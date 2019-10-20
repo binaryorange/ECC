@@ -21,20 +21,20 @@ export(Array, NodePath) var ZoomLevels
 export (float) var LerpWeight = 0.03
 
 # export our rotational speed
-export (float) var RotationSpeed = 2.0
+export (float) var RotationSpeed = 1.75
 
 # export our collision probe size
-export (float) var CollisionProbeSize = 1.0
+export (float) var CollisionProbeSize = 2.0
 
 # export our max and min camera angles
 export (float) var MaxCameraAngle = 70
-export (float) var MinCameraAngle = -35
+export (float) var MinCameraAngle = -45
 
 # export our clip offset multiplier
-export (float) var ClipOffsetMultiplier = 1
+export (float) var ClipOffsetMultiplier = 1.075
 
 # export our view cam distance modifier
-export (float) var ViewCamDistanceModifier = 0.15
+export (float) var ViewCamDistanceModifier = 1.05
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = false
@@ -197,6 +197,7 @@ func _check_for_occlusion():
 			
 			# alert the collision probe that we are clipping
 			is_clipping = true
+			
 			# show the target
 			view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
 				
