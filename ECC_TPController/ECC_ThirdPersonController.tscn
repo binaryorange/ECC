@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://ECC_TPController/ECC_ThirdPersonController/ECC_TPController.gd" type="Script" id=1]
+[ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
 
 [sub_resource type="CylinderMesh" id=1]
 
