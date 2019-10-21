@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://ECC_ThirdPersonController/helper_mesh.tres" type="Material" id=1]
-[ext_resource path="res://ECC_ThirdPersonController/ECC_TPController.gd" type="Script" id=2]
+[ext_resource path="res://ECC_TPController/ECC_ThirdPersonController/ECC_TPController.gd" type="Script" id=1]
 
 [sub_resource type="CylinderMesh" id=1]
 
@@ -14,7 +13,7 @@ extents = Vector3( 0.5, 2.5, 0.5 )
 "Player",
 ]]
 transform = Transform( 1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0.25, 2.5, 0.25 )
-script = ExtResource( 2 )
+script = ExtResource( 1 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
@@ -28,7 +27,7 @@ ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/C
 ]]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
 mesh = SubResource( 1 )
-material/0 = ExtResource( 1 )
+material/0 = null
 __meta__ = {
 "_editor_description_": "This HelperMesh represents the gimbal setup's CENTER, and thus its ZERO POSITION.
 
