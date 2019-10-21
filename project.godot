@@ -15,8 +15,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="3DGimbalSetupTestThingy"
-run/main_scene="res://Testing.tscn"
+config/name="ECC_ThirdPersonController"
+run/main_scene="res://ECC_ThirdPersonController.tscn"
 config/icon="res://icon.png"
 
 [display]

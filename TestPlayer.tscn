@@ -51,7 +51,7 @@ script = ExtResource( 3 )
 ViewCamera = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 ClipCamera = NodePath("../ECC_ThirdPerson/X Gimbal/ClipCameraTarget/ClippedCamera")
 ClipCameraException = NodePath("..")
-ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3"), NodePath("X Gimbal/ClipCameraTarget/Zoom4") ]
+ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
 EnableFollowDelay = true
 EnableMouseInput = true
 
@@ -126,11 +126,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8 )
 "Player",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
-
-[node name="Zoom4" type="Position3D" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" groups=[
-"Player",
-]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16 )
 
 [node name="ConfinedSpaceDetector" type="Spatial" parent="ECC_ThirdPerson" groups=[
 "Player",
