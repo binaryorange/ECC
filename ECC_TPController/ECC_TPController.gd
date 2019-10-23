@@ -63,8 +63,15 @@ var is_clipping = false
 
 # hide these when we are running the game
 var helper_mesh
+
+# this allows us to toggle between mouse/gamepad input
 var mouse_captured = false
+
+# we use this to track if the mouse moved or not during the last frame
 var mouse_moved = false
+
+# we use this array to determine if there are more than one bodies in the CollisionProbe.
+var collision_probe_array = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -209,6 +216,8 @@ func _check_for_occlusion():
 	zoom_level_array[zoom] + ViewCamDistanceModifier, 
 	LerpWeight)
 	
+	# reset mouse_moved so that we don't update the gimbal's rotation automatically every frame
+	# while using the mouse instead of the gamepad
 	mouse_moved = false
 	
 # support mouse input
@@ -247,12 +256,30 @@ func _on_ConfinedSpaceArea_body_exited(body):
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):
-	if !body.is_in_group("Player") and !collision_probe_hit:
-		collision_probe_hit = true
-		print("CollisionProbeHit: " + str(collision_probe_hit))
+	if !body.is_in_group("Player"):
+		
+		# check to make sure this body doesn't exist in the array.
+		# if it doesn't, we will add it to the array, and set collision_probe_hit to true!
+		if collision_probe_array.find(body) == -1:
+			collision_probe_hit = true
+			collision_probe_array.insert(collision_probe_array.size(), body)
+			print("CollisionProbeHit: " + str(collision_probe_hit))
+			print("Added " + str(body) + " to collision_probe_array, size now " + str(collision_probe_array.size()))
+		else:
+			print("I'm already here, man!")
 
 # this tells us when the camera has stopped clipping against walls
 func _on_CanClipDetector_body_exited(body):
-	if !body.is_in_group("Player") and !is_clipping and collision_probe_hit:
-		collision_probe_hit = false
-		print("CollisionProbeHit: " + str(collision_probe_hit))
+	if !body.is_in_group("Player"):
+		
+		# check array to make sure it is not empty
+		if collision_probe_array.size() != -1:
+			# search for the body and remove it
+			var body_to_remove = collision_probe_array.find(body)
+			if body_to_remove != -1:
+				collision_probe_array.remove(body_to_remove)
+				print("Removed " + str(body) + ", collision_probe_array size now " + str(collision_probe_array.size()))
+		
+		if collision_probe_array.empty() and !is_clipping:
+			collision_probe_hit = false
+			print("CollisionProbeHit: " + str(collision_probe_hit))

@@ -42,3 +42,4 @@ transform = Transform( -4.37114e-008, 0, 1, 0, 1, 0, -1, 0, -4.37114e-008, 11, 4
 
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 1 )]
 ClipCameraException = NodePath("..")
+CollisionProbeSize = 3.0
