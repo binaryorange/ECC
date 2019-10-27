@@ -44,6 +44,8 @@ export (float) var FollowDelayWeight = 0.07
 export (bool) var EnableMouseInput = false
 export (float) var MouseSensitivity = 2
 
+export (float) var ZoomDelay = 1.0
+
 # our local variables
 var cam_up = 0.0
 var cam_right = 0.0
@@ -60,6 +62,7 @@ var is_in_confined_space = false
 var collision_probe_hit = false
 var collision_probe_shape
 var is_clipping = false
+var counting_down = false
 
 # hide these when we are running the game
 var helper_mesh
@@ -119,6 +122,8 @@ func _ready():
 	if EnableMouseInput:
 		mouse_captured = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		
+	$ZoomTimer.wait_time = ZoomDelay
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -137,7 +142,7 @@ func _get_input():
 		cam_up = Input.get_action_strength("cam_look_down") - Input.get_action_strength("cam_look_up")
 		
 		# zoom the camera
-		if Input.is_action_just_pressed("zoom"):
+		if Input.is_action_just_pressed("zoom") and !counting_down:
 			_zoom_camera(1)
 				
 	# uncapture or recapture the mouse
@@ -224,23 +229,36 @@ func _check_for_occlusion():
 func _input(event):
 	if mouse_captured:
 		if event is InputEventMouseMotion:
-			cam_up = deg2rad(event.relative.y * MouseSensitivity * -1)
-			cam_right = deg2rad(event.relative.x * MouseSensitivity)
+			cam_up = deg2rad(event.relative.y * -1)
+			cam_right = deg2rad(event.relative.x)
 			mouse_moved = true
 			
-		if event is InputEventMouseButton:
+		if event is InputEventMouseButton and !counting_down:
 			if event.is_action_pressed("mouse_zoom_out"):
 				_zoom_camera(1)
+			if event.is_action_pressed("mouse_zoom_in"):
+				_zoom_camera(-1)
 
 
 func _zoom_camera(var amount):
-	# check that the zoom level isn't past the cap
-	if zoom >= max_zoom_level - 1:
-		zoom = 0
-	else:
-		zoom += amount
-	print(zoom)
-	
+	# only change zoom levels while the timer is not counting down
+	$ZoomTimer.start(ZoomDelay)
+	counting_down = true
+	if $ZoomTimer.time_left == ZoomDelay:
+		# if we are at the cap and using the mouse, keep zoomed out
+		if mouse_captured:
+			zoom += amount
+			
+			if zoom >= max_zoom_level - 1:
+				zoom = max_zoom_level - 1
+			elif zoom <= 0:
+				zoom = 0
+		else:
+			if zoom >= max_zoom_level - 1:
+				zoom = 0
+			else:
+				zoom += amount
+
 # tells us when the player has entered a confined space
 func _on_ConfinedSpaceArea_body_entered(body):
 	if !body.is_in_group("Player") and !is_in_confined_space:
@@ -263,8 +281,7 @@ func _on_CanClipDetector_body_entered(body):
 		if collision_probe_array.find(body) == -1:
 			collision_probe_hit = true
 			collision_probe_array.insert(collision_probe_array.size(), body)
-			print("CollisionProbeHit: " + str(collision_probe_hit))
-			print("Added " + str(body) + " to collision_probe_array, size now " + str(collision_probe_array.size()))
+			print("Collision Probe Hit: " + str(collision_probe_hit) + " | Added " + str(body) + " at index [" + str(collision_probe_array.size()-1) + "]")
 		else:
 			print("I'm already here, man!")
 
@@ -278,8 +295,15 @@ func _on_CanClipDetector_body_exited(body):
 			var body_to_remove = collision_probe_array.find(body)
 			if body_to_remove != -1:
 				collision_probe_array.remove(body_to_remove)
-				print("Removed " + str(body) + ", collision_probe_array size now " + str(collision_probe_array.size()))
+				print("Removed " + str(body) + " from index [" + str(collision_probe_array.size()) + "]")
 		
 		if collision_probe_array.empty() and !is_clipping:
 			collision_probe_hit = false
 			print("CollisionProbeHit: " + str(collision_probe_hit))
+
+
+func _on_ZoomTimer_timeout():
+	# stop the zoomtimer
+	$ZoomTimer.stop()
+	$ZoomTimer.wait_time = ZoomDelay
+	counting_down = false

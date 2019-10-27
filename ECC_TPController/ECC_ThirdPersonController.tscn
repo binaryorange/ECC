@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
+[ext_resource path="res://ECC_TPController/CheckInputs.gd" type="Script" id=2]
 
 [sub_resource type="CylinderMesh" id=1]
 
@@ -17,6 +18,10 @@ script = ExtResource( 1 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
+ZoomDelay = 0.5
+
+[node name="CheckInputs" type="Node" parent="."]
+script = ExtResource( 2 )
 
 [node name="X Gimbal" type="Spatial" parent="." groups=[
 "Player",
@@ -105,7 +110,14 @@ gravity_vec = Vector3( 0, 0, 0 )
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
 shape = SubResource( 3 )
+
+[node name="ZoomTimer" type="Timer" parent="."]
+wait_time = 0.1
+__meta__ = {
+"_editor_description_": "We use this timer to prevent the player from \"blasting\" through different zoom levels."
+}
 [connection signal="body_entered" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_entered"]
 [connection signal="body_exited" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_exited"]
 [connection signal="body_entered" from="ConfinedSpaceDetector/ConfinedSpaceArea" to="." method="_on_ConfinedSpaceArea_body_entered"]
 [connection signal="body_exited" from="ConfinedSpaceDetector/ConfinedSpaceArea" to="." method="_on_ConfinedSpaceArea_body_exited"]
+[connection signal="timeout" from="ZoomTimer" to="." method="_on_ZoomTimer_timeout"]
