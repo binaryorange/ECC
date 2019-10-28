@@ -3,7 +3,9 @@
 [ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
 [ext_resource path="res://ECC_TPController/CheckInputs.gd" type="Script" id=2]
 
-[sub_resource type="CylinderMesh" id=1]
+[sub_resource type="SphereMesh" id=1]
+radial_segments = 8
+rings = 8
 
 [sub_resource type="SphereShape" id=2]
 
@@ -18,7 +20,7 @@ script = ExtResource( 1 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
-ZoomDelay = 0.5
+CollisionProbeSize = 0.5
 
 [node name="CheckInputs" type="Node" parent="."]
 script = ExtResource( 2 )
