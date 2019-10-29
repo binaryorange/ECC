@@ -17,7 +17,8 @@ size = Vector3( 2, 4, 2 )
 ]]
 script = ExtResource( 2 )
 MoveSpeed = 400.0
-JumpForce = 200.0
+Gravity = 0.98
+JumpForce = 10000.0
 
 [node name="CollisionShape" type="CollisionShape" parent="." groups=[
 "Player",
@@ -50,6 +51,6 @@ ViewCamDistanceModifier = 1.1
 EnableFollowDelay = true
 
 [node name="FloorTester" type="RayCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0 )
 enabled = true
 cast_to = Vector3( 0, -1.01, 0 )
