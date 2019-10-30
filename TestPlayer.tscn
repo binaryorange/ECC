@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://ECC_TPController/ECC_ThirdPersonController.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
@@ -10,7 +10,27 @@ height = 2.02072
 [sub_resource type="CubeMesh" id=2]
 size = Vector3( 2, 4, 2 )
 
-[sub_resource type="CapsuleMesh" id=3]
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 0, 1, 0.952941, 1 )
+metallic_specular = 1.0
+roughness = 0.67
+emission_enabled = true
+emission = Color( 0, 0.6, 1, 1 )
+emission_energy = 5.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CapsuleMesh" id=4]
+
+[sub_resource type="SpatialMaterial" id=5]
+albedo_color = Color( 0.85098, 0, 1, 1 )
+metallic = 1.0
+roughness = 0.06
+emission_enabled = true
+emission = Color( 0.709804, 0, 1, 1 )
+emission_energy = 1.0
+emission_operator = 0
+emission_on_uv2 = false
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
@@ -30,14 +50,14 @@ shape = SubResource( 1 )
 "Player",
 ]]
 mesh = SubResource( 2 )
-material/0 = null
+material/0 = SubResource( 3 )
 
 [node name="Nose" type="MeshInstance" parent="Body" groups=[
 "Player",
 ]]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.25, 0, 1.25, 1 )
-mesh = SubResource( 3 )
-material/0 = null
+mesh = SubResource( 4 )
+material/0 = SubResource( 5 )
 
 [node name="Camera" type="Camera" parent="." groups=[
 "Player",
@@ -54,3 +74,8 @@ EnableFollowDelay = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0 )
 enabled = true
 cast_to = Vector3( 0, -1.01, 0 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+light_color = Color( 0.490196, 0.890196, 1, 1 )
+shadow_enabled = true
+omni_range = 8.0

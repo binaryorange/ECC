@@ -2,7 +2,11 @@ extends KinematicBody
 
 export (float) var MoveSpeed = 3
 export (float) var Gravity = 19.80
+export (float) var TerminalVelocity = -19.80
+export (float) var AccelerationForce = 3
+export (float) var DecelerationForce = 5
 export (float) var JumpForce = 30
+
 
 var velocity = Vector3(0, 0, 0)
 var gravity = 0
@@ -12,8 +16,6 @@ var h
 var yVelocity = 0
 var oldRot
 var character
-var acceleration = 3
-var deceleration = 5
 
 var camera
 
@@ -41,24 +43,26 @@ func _physics_process(delta):
 	move.y = 0
 	
 	velocity = move
-	velocity = velocity.normalized()
+	
 	
 	# get the horizontal velocity
 	var hv = velocity
 	hv.y = 0
 	
 	var new_pos = move * MoveSpeed
-	var accel = deceleration
+	var accel = DecelerationForce
 	
 	if (move.dot(hv) > 0):
-		accel = acceleration
+		accel = AccelerationForce
 		
 	hv = hv.linear_interpolate(new_pos, accel * MoveSpeed)
+	
+	velocity = velocity.normalized()
 	
 	velocity.x = hv.x
 	velocity.y = yVelocity
 	velocity.z = hv.z
-
+	
 	velocity = move_and_slide(velocity, Vector3.DOWN)
 	
 	# account for gravity
@@ -67,17 +71,18 @@ func _physics_process(delta):
 	if $FloorTester.is_colliding():
 		if Input.is_action_just_pressed("jump"):
 			yVelocity = JumpForce
+			
+	# limit the y speed
+	if yVelocity <= TerminalVelocity:
+		yVelocity = TerminalVelocity
 	
 	# rotate the character
 	if h != 0 or v != 0:
 		var angle = atan2(hv.x, hv.z)
 		var char_rot = character.get_rotation()
 		char_rot.y = angle
-		character.rotation = lerp(character.rotation, char_rot, 0.01)
-		character.set_rotation(char_rot)
+		character.rotation = lerp(character.rotation, char_rot, 0.99)
 		oldRot = char_rot
-	else:
-		character.rotation = lerp(character.rotation, oldRot, 0.01)
 
 
 		
