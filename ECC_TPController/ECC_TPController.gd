@@ -47,10 +47,6 @@ export (float) var MouseSensitivity = 2
 # the zoom delay is used to disallow the player from changing the camera view super fast
 export (float) var ZoomDelay = 0.5
 
-# the reset camera speed is used to determine how quickly the camera should rotate back to behind the player
-export (float) var ResetCamera = -0.5
-
-
 # our local variables
 var cam_up = 0.0
 var cam_right = 0.0
@@ -69,6 +65,9 @@ var collision_probe_shape
 var is_clipping = false
 var counting_down = false
 var rotate_back = false
+var player
+var is_player_in_orbit_zone = false
+var new_follow_weight
 
 # hide these when we are running the game
 var helper_mesh
@@ -90,6 +89,7 @@ func _ready():
 	x_gimbal = $"X Gimbal"
 	view_cam = get_node(ViewCamera)
 	clip_cam = get_node(ClipCamera)
+	player = get_node(ClipCameraException)
 	helper_mesh = $"X Gimbal/HelperMesh"
 	collision_probe_shape = $"X Gimbal/ViewCamera/CanClipDetector/CollisionShape"
 	
@@ -130,6 +130,7 @@ func _ready():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		
 	$ZoomTimer.wait_time = ZoomDelay
+	new_follow_weight = FollowDelayWeight
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -146,7 +147,7 @@ func _get_input():
 			cam_right = Input.get_action_strength("cam_look_left") - Input.get_action_strength("cam_look_right")
 		
 		# store the up movement
-		cam_up = Input.get_action_strength("cam_look_down") - Input.get_action_strength("cam_look_up")
+		cam_up = Input.get_action_strength("cam_look_up") - Input.get_action_strength("cam_look_down")
 		
 		# zoom the camera
 		if Input.is_action_just_pressed("zoom"):
@@ -163,6 +164,12 @@ func _get_input():
 			
 # update the camera's position and rotation
 func _update_camera(delta):
+	
+	# if the player is in the orbit zone, we only look at them.
+	# otherwise, we update the camera accordingly
+	new_follow_weight = FollowDelayWeight
+	if is_player_in_orbit_zone:
+		_look_at_player()
 	
 	# position the gimbal to the player's position, plus the offset
 	if EnableFollowDelay:
@@ -190,9 +197,6 @@ func _update_camera(delta):
 	
 	# now check for occluding geometry
 	_check_for_occlusion()
-	
-	# now check if the player is rotating the camera backwards
-	_rotate_to_player()
 
 # check for occluding objects by casting a ray back to the player
 func _check_for_occlusion():
@@ -221,20 +225,20 @@ func _check_for_occlusion():
 			is_clipping = true
 			
 			# show the target
-			view_cam.transform.origin.z = zoom_level_array[zoom] + ViewCamDistanceModifier + clip_offset * ClipOffsetMultiplier
+			view_cam.transform.origin.z = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
 				
 		else:
 			is_clipping = false
 			
 	# position the camera to the current zoom level from the zoom level array
 	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
-	zoom_level_array[zoom] + ViewCamDistanceModifier, 
+	zoom_level_array[zoom] - ViewCamDistanceModifier, 
 	LerpWeight)
 	
 	# reset mouse_moved so that we don't update the gimbal's rotation automatically every frame
 	# while using the mouse instead of the gamepad
 	mouse_moved = false
-	
+
 # support mouse input
 func _input(event):
 	if mouse_captured:
@@ -279,34 +283,10 @@ func _zoom_camera(var amount):
 			else:
 				zoom += amount
 				
-# this will rotate our gimbal back to behind the player
-func _rotate_to_player():
-	# rotate the camera back when recenter_camera is triggered
-	if Input.is_action_just_pressed("recenter_camera") and self.rotation_degrees.y != 0:
-		rotate_back = true
-
-	
-	# rotate the camera back
-	if rotate_back:
-		# store the rotation value of the gimbal's y
-		var gimbal_y = self.rotation_degrees.y
-		
-		if self.rotation_degrees.y > 0 and self.rotation_degrees.y < 180:
-			cam_right = ResetCamera
-			gimbal_y = clamp(gimbal_y, 0.5, 180)
-			
-		elif self.rotation_degrees.y > -180 and self.rotation_degrees.y < -0:
-			cam_right = abs(ResetCamera)
-			gimbal_y = clamp(gimbal_y, -180, -0.5)
-
-		self.rotate_y(cam_right)
-		
-		self.rotation_degrees.y = gimbal_y
-
-	# stop rotating back when we reach closer to 0
-	if self.rotation_degrees.y == 0.5 or self.rotation_degrees.y == -0.5:
-		self.rotation_degrees.y = 0
-		rotate_back = false
+# force the viewcam to look at the player
+func _look_at_player():
+	var offY = Vector3(0, 1.5, 0)
+	view_cam.look_at(player.transform.origin + offY, Vector3.UP)
 
 # tells us when the player has entered a confined space
 func _on_ConfinedSpaceArea_body_entered(body):

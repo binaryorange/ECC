@@ -31,8 +31,8 @@ func _physics_process(delta):
 	gravity = Gravity
 	
 	# get the input
-	h = Input.get_action_strength("move_left") - Input.get_action_strength("move_right")
-	v = Input.get_action_strength("move_up") - Input.get_action_strength("move_down")
+	h = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	v = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
 	
 	var x = camera.transform.basis.x * h
 	var z = camera.transform.basis.z * v
@@ -78,7 +78,7 @@ func _physics_process(delta):
 	
 	# rotate the character
 	if h != 0 or v != 0:
-		var angle = atan2(hv.x, hv.z)
+		var angle = atan2(-hv.x, -hv.z)
 		var char_rot = character.get_rotation()
 		char_rot.y = angle
 		character.rotation = lerp(character.rotation, char_rot, 0.99)
