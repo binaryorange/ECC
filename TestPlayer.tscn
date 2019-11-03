@@ -69,6 +69,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2.5, -0.5 )
 ClipCameraException = NodePath("..")
 EnableFollowDelay = true
 
+[node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5 )
+
 [node name="FloorTester" type="RayCast" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0 )
 enabled = true
@@ -78,3 +81,5 @@ cast_to = Vector3( 0, -1.01, 0 )
 light_color = Color( 0.490196, 0.890196, 1, 1 )
 shadow_enabled = true
 omni_range = 8.0
+
+[editable path="ECC_ThirdPerson"]

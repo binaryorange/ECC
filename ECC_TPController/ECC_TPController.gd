@@ -50,6 +50,8 @@ export (float) var ZoomDelay = 0.5
 # our local variables
 var cam_up = 0.0
 var cam_right = 0.0
+var player_right = 0.0
+var player_up = 0.0
 var zoom  = 0
 var clip_cam
 var view_cam 
@@ -67,7 +69,7 @@ var counting_down = false
 var rotate_back = false
 var player
 var is_player_in_orbit_zone = false
-var new_follow_weight
+var raycast_offset 
 
 # hide these when we are running the game
 var helper_mesh
@@ -98,6 +100,13 @@ func _ready():
 	
 	# set gimbal as top level
 	self.set_as_toplevel(true)
+	
+	# set raycaster as toplevel
+	$ConfinedSpaceCheck.set_as_toplevel(true)
+	
+	raycast_offset = $ConfinedSpaceCheck.transform.origin - get_parent().transform.origin
+	
+	# store the position offset of the raycast node
 	
 	# store the offset of the gimbal relative to its parent node
 	gimbal_offset = self.transform.origin - get_parent().transform.origin
@@ -130,7 +139,6 @@ func _ready():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		
 	$ZoomTimer.wait_time = ZoomDelay
-	new_follow_weight = FollowDelayWeight
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -142,6 +150,11 @@ func _get_input():
 	
 	# get joystick movement data if we are not using the mouse
 	if !mouse_captured:
+		
+		# store the player's input information
+		player_right = Input.get_action_strength("move_left") - Input.get_action_strength("move_right")
+		player_up = Input.get_action_strength("move_up") - Input.get_action_strength("move_down")
+		
 		# store the right movement
 		if !rotate_back:
 			cam_right = Input.get_action_strength("cam_look_left") - Input.get_action_strength("cam_look_right")
@@ -161,13 +174,27 @@ func _get_input():
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			
+
+#	if Input.is_action_just_pressed("recenter_camera"):
+#		rotate_back = true
+#
+#	if rotate_back:
+#		# make the Y Gimbal rotation match the player's rotation
+#		var cur_rot_y = self.rotation_degrees.y
+#
+#		var new_rot_y = get_parent().rotation_degrees.y
+#
+#		# lerp to the new rotation
+#		self.rotation_degrees.y = lerp(cur_rot_y, new_rot_y, 0.1)
+#
+#		if cur_rot_y == new_rot_y:
+#			rotate_back = false
+		
 # update the camera's position and rotation
 func _update_camera(delta):
 	
 	# if the player is in the orbit zone, we only look at them.
 	# otherwise, we update the camera accordingly
-	new_follow_weight = FollowDelayWeight
 	if is_player_in_orbit_zone:
 		_look_at_player()
 	
@@ -197,6 +224,30 @@ func _update_camera(delta):
 	
 	# now check for occluding geometry
 	_check_for_occlusion()
+	
+	# check if we are colliding against geometry above the player
+	if $ConfinedSpaceCheck.is_colliding():
+		if !is_in_confined_space:
+			is_in_confined_space = true
+	else: # we are not colliding so set it to false
+		if is_in_confined_space:
+			is_in_confined_space = false
+			
+	# position the raycast
+	$ConfinedSpaceCheck.transform.origin = get_parent().transform.origin + raycast_offset
+	
+	# update camera's rotation based on input
+	if player_right and cam_right == 0 and cam_up == 0:
+		var parent_rot_y = get_parent().rotation_degrees.y
+		if player_right > 0:
+			self.rotation_degrees.y = lerp(self.rotation_degrees.y, get_parent().rotation_degrees.y + 720, 0.0015)
+		elif player_right < 0:
+			self.rotation_degrees.y = lerp(self.rotation_degrees.y, get_parent().rotation_degrees.y - 720, 0.0015)
+			
+
+			
+
+
 
 # check for occluding objects by casting a ray back to the player
 func _check_for_occlusion():
@@ -286,20 +337,8 @@ func _zoom_camera(var amount):
 # force the viewcam to look at the player
 func _look_at_player():
 	var offY = Vector3(0, 1.5, 0)
+	clip_cam.look_at(player.transform.origin + offY, Vector3.UP)
 	view_cam.look_at(player.transform.origin + offY, Vector3.UP)
-
-# tells us when the player has entered a confined space
-func _on_ConfinedSpaceArea_body_entered(body):
-	if !body.is_in_group("Player") and !is_in_confined_space:
-		is_in_confined_space = true
-		print("In Confined Space: " + str(is_in_confined_space))
-
-
-# tells us when the player has exited a confined space
-func _on_ConfinedSpaceArea_body_exited(body):
-	if !body.is_in_group("Player") and is_in_confined_space:
-		is_in_confined_space = false
-		print("In Confined Space: " + str(is_in_confined_space))
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):

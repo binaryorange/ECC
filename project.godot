@@ -109,8 +109,9 @@ jump={
 
 [rendering]
 
+quality/filters/anisotropic_filter_level=8
 quality/shadows/filter_mode=2
 quality/filters/use_nearest_mipmap_filter=true
 environment/default_clear_color=Color( 0, 0, 0, 1 )
-quality/filters/msaa=2
+quality/filters/msaa=1
 environment/default_environment="res://default_env.tres"

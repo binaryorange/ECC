@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
 [ext_resource path="res://ECC_TPController/CheckInputs.gd" type="Script" id=2]
@@ -11,9 +11,6 @@ rings = 8
 
 [sub_resource type="SphereShape" id=3]
 radius = 8.0
-
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 0.5, 2.5, 0.5 )
 
 [node name="ECC_ThirdPerson" type="Spatial" groups=[
 "Player",
@@ -50,7 +47,6 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
 current = true
 fov = 60.0
-near = 0.01
 far = 500.0
 __meta__ = {
 "_editor_description_": "This is the camera that actually sees the player.
@@ -111,28 +107,15 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16 )
 
-[node name="ConfinedSpaceDetector" type="Spatial" parent="." groups=[
-"Player",
-]]
-
-[node name="ConfinedSpaceArea" type="Area" parent="ConfinedSpaceDetector" groups=[
-"Player",
-]]
-gravity_vec = Vector3( 0, 0, 0 )
-
-[node name="Shape" type="CollisionShape" parent="ConfinedSpaceDetector/ConfinedSpaceArea" groups=[
-"Player",
-]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
-shape = SubResource( 4 )
-
 [node name="ZoomTimer" type="Timer" parent="."]
 wait_time = 0.1
 __meta__ = {
 "_editor_description_": "We use this timer to prevent the player from \"blasting\" through different zoom levels."
 }
+
+[node name="ConfinedSpaceCheck" type="RayCast" parent="."]
+enabled = true
+cast_to = Vector3( 0, 5, 0 )
 [connection signal="body_entered" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_entered"]
 [connection signal="body_exited" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_exited"]
-[connection signal="body_entered" from="ConfinedSpaceDetector/ConfinedSpaceArea" to="." method="_on_ConfinedSpaceArea_body_entered"]
-[connection signal="body_exited" from="ConfinedSpaceDetector/ConfinedSpaceArea" to="." method="_on_ConfinedSpaceArea_body_exited"]
 [connection signal="timeout" from="ZoomTimer" to="." method="_on_ZoomTimer_timeout"]

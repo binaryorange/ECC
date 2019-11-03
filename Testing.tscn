@@ -40,7 +40,7 @@ material/0 = null
 shape = SubResource( 3 )
 
 [node name="TestPlayer" parent="." instance=ExtResource( 1 )]
-transform = Transform( -1, 0, -3.25841e-007, 0, 1, 0, 3.25841e-007, 0, -1, -17, 5, -46 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 5, -46 )
 MoveSpeed = 3.0
 AccelerationForce = 2.0
 DecelerationForce = 3.0
