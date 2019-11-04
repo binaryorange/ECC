@@ -68,8 +68,8 @@ var is_clipping = false
 var counting_down = false
 var rotate_back = false
 var player
-var is_player_in_orbit_zone = false
 var raycast_offset 
+var lerp_pos = 0
 
 # hide these when we are running the game
 var helper_mesh
@@ -156,8 +156,7 @@ func _get_input():
 		player_up = Input.get_action_strength("move_up") - Input.get_action_strength("move_down")
 		
 		# store the right movement
-		if !rotate_back:
-			cam_right = Input.get_action_strength("cam_look_left") - Input.get_action_strength("cam_look_right")
+		cam_right = Input.get_action_strength("cam_look_left") - Input.get_action_strength("cam_look_right")
 		
 		# store the up movement
 		cam_up = Input.get_action_strength("cam_look_up") - Input.get_action_strength("cam_look_down")
@@ -175,28 +174,8 @@ func _get_input():
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-#	if Input.is_action_just_pressed("recenter_camera"):
-#		rotate_back = true
-#
-#	if rotate_back:
-#		# make the Y Gimbal rotation match the player's rotation
-#		var cur_rot_y = self.rotation_degrees.y
-#
-#		var new_rot_y = get_parent().rotation_degrees.y
-#
-#		# lerp to the new rotation
-#		self.rotation_degrees.y = lerp(cur_rot_y, new_rot_y, 0.1)
-#
-#		if cur_rot_y == new_rot_y:
-#			rotate_back = false
-		
 # update the camera's position and rotation
 func _update_camera(delta):
-	
-	# if the player is in the orbit zone, we only look at them.
-	# otherwise, we update the camera accordingly
-	if is_player_in_orbit_zone:
-		_look_at_player()
 	
 	# position the gimbal to the player's position, plus the offset
 	if EnableFollowDelay:
@@ -236,20 +215,27 @@ func _update_camera(delta):
 	# position the raycast
 	$ConfinedSpaceCheck.transform.origin = get_parent().transform.origin + raycast_offset
 	
-	# update camera's rotation based on input
-	if player_right and cam_right == 0 and cam_up == 0:
-		var parent_rot_y = get_parent().rotation_degrees.y
-		if player_right > 0:
-			self.rotation_degrees.y = lerp(self.rotation_degrees.y, get_parent().rotation_degrees.y + 720, 0.0015)
-		elif player_right < 0:
-			self.rotation_degrees.y = lerp(self.rotation_degrees.y, get_parent().rotation_degrees.y - 720, 0.0015)
-			
-
-			
+	# update camera's rotation 
+	# _look_at_player()
 
 
+	
+	# rotate the camera gimbal to the player's rotation
+	if cam_right == 0 and cam_up == 0:
+		if player_right > 0.15:
+			lerp_pos = get_parent().rotation.y + 180
+		elif player_right < -0.15:
+			lerp_pos = get_parent().rotation.y - 180
+		elif player_right == 0:
+			lerp_pos = get_parent().rotation.y
+	
+		if player_right != 0 and !player_up < -0.25:
+			# rotate the camera
+			self.rotation.y = lerp(self.rotation.y, lerp_pos, 0.00015)
 
-# check for occluding objects by casting a ray back to the player
+
+
+# check for occluding objects
 func _check_for_occlusion():
 	
 	# check if the CollisionProbe is hitting anything
@@ -336,9 +322,9 @@ func _zoom_camera(var amount):
 				
 # force the viewcam to look at the player
 func _look_at_player():
-	var offY = Vector3(0, 1.5, 0)
-	clip_cam.look_at(player.transform.origin + offY, Vector3.UP)
-	view_cam.look_at(player.transform.origin + offY, Vector3.UP)
+	var offY = Vector3(0, -0.5, 0)
+	clip_cam.look_at(self.transform.origin + offY, Vector3.UP)
+	view_cam.look_at(self.transform.origin + offY, Vector3.UP)
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):
@@ -350,8 +336,6 @@ func _on_CanClipDetector_body_entered(body):
 			collision_probe_hit = true
 			collision_probe_array.insert(collision_probe_array.size(), body)
 			print("Collision Probe Hit: " + str(collision_probe_hit) + " | Added " + str(body) + " at index [" + str(collision_probe_array.size()-1) + "]")
-		else:
-			print("I'm already here, man!")
 
 # this tells us when the camera has stopped clipping against walls
 func _on_CanClipDetector_body_exited(body):
