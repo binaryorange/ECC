@@ -69,7 +69,7 @@ var counting_down = false
 var rotate_back = false
 var player
 var raycast_offset 
-var lerp_pos = 0
+var rot_y_angle = 0
 
 # hide these when we are running the game
 var helper_mesh
@@ -218,20 +218,17 @@ func _update_camera(delta):
 	# update camera's rotation 
 	# _look_at_player()
 
-
-	
 	# rotate the camera gimbal to the player's rotation
 	if cam_right == 0 and cam_up == 0:
-		if player_right > 0.15:
-			lerp_pos = get_parent().rotation.y + 180
-		elif player_right < -0.15:
-			lerp_pos = get_parent().rotation.y - 180
-		elif player_right == 0:
-			lerp_pos = get_parent().rotation.y
+		if player_right > 0:
+			rot_y_angle = 1.8
+		elif player_right < 0:
+			rot_y_angle = -1.8
 	
+		# rotate the camera in the direction given determined by player_right's value
+		# and only rotate when the player is not directly walking backwards "into" the camera!
 		if player_right != 0 and !player_up < -0.25:
-			# rotate the camera
-			self.rotation.y = lerp(self.rotation.y, lerp_pos, 0.00015)
+			self.rotate_y(rot_y_angle/100)
 
 
 

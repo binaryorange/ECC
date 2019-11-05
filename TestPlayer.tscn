@@ -75,6 +75,7 @@ cast_to = Vector3( 0, -1.01, 0 )
 
 [node name="OmniLight" type="OmniLight" parent="."]
 light_color = Color( 0.490196, 0.890196, 1, 1 )
+light_energy = 1.5
 shadow_enabled = true
 omni_range = 8.0
 

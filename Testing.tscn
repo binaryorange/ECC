@@ -48,7 +48,8 @@ JumpForce = 30.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
-light_energy = 0.25
+light_energy = 0.01
+light_indirect_energy = 0.1
 shadow_enabled = true
 
 [node name="Ceiling" type="MeshInstance" parent="."]
