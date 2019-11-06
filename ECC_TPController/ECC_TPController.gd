@@ -123,7 +123,7 @@ func _ready():
 	
 	# set the default zoom level of the cameras
 	clip_cam.transform.origin.z = zoom_level_array[0]
-	view_cam.transform.origin.z += ViewCamDistanceModifier
+	view_cam.transform.origin.z -= ViewCamDistanceModifier
 
 	# add the ClipCameraException node
 	clip_cam.add_exception(get_node(ClipCameraException))
@@ -227,8 +227,8 @@ func _update_camera(delta):
 	
 		# rotate the camera in the direction given determined by player_right's value
 		# and only rotate when the player is not directly walking backwards "into" the camera!
-		if player_right != 0 and !player_up < -0.25:
-			self.rotate_y(rot_y_angle/100)
+		if player_right != 0:
+			self.rotate_y((rot_y_angle/100) * abs(player_right))
 
 
 
