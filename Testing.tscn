@@ -65,6 +65,58 @@ __meta__ = {
 [node name="CollisionShape" type="CollisionShape" parent="Ceiling/Ceiling"]
 shape = SubResource( 5 )
 
+[node name="Ceiling15" type="MeshInstance" parent="."]
+transform = Transform( 2, 0, 0, 0, 0.1, 0, 0, 0, 5, -10, 14, -1 )
+mesh = SubResource( 4 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Ceiling15"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ceiling15/Ceiling"]
+shape = SubResource( 5 )
+
+[node name="Ceiling16" type="MeshInstance" parent="."]
+transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -17, 14, 2 )
+mesh = SubResource( 4 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Ceiling16"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ceiling16/Ceiling"]
+shape = SubResource( 5 )
+
+[node name="Ceiling17" type="MeshInstance" parent="."]
+transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -27, 17, 2 )
+mesh = SubResource( 4 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Ceiling17"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ceiling17/Ceiling"]
+shape = SubResource( 5 )
+
+[node name="Ceiling18" type="MeshInstance" parent="."]
+transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -40, 20, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Ceiling18"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Ceiling18/Ceiling"]
+shape = SubResource( 5 )
+
 [node name="Ceiling7" type="MeshInstance" parent="."]
 transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, 14, 1, -10 )
 mesh = SubResource( 4 )

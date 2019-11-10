@@ -81,9 +81,5 @@ func _physics_process(delta):
 		var angle = atan2(-hv.x, -hv.z)
 		var char_rot = character.get_rotation()
 		char_rot.y = angle
-		character.rotation = lerp(character.rotation, char_rot, 0.99)
-		oldRot = char_rot
-
-
-		
+		character.rotation = char_rot
 	

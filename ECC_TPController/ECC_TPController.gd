@@ -66,7 +66,6 @@ var collision_probe_hit = false
 var collision_probe_shape
 var is_clipping = false
 var counting_down = false
-var rotate_back = false
 var player
 var raycast_offset 
 var rot_y_angle = 0
@@ -214,9 +213,6 @@ func _update_camera(delta):
 			
 	# position the raycast
 	$ConfinedSpaceCheck.transform.origin = get_parent().transform.origin + raycast_offset
-	
-	# update camera's rotation 
-	# _look_at_player()
 
 	# rotate the camera gimbal to the player's rotation
 	if cam_right == 0 and cam_up == 0:
@@ -224,7 +220,7 @@ func _update_camera(delta):
 			rot_y_angle = 1.8
 		elif player_right < 0:
 			rot_y_angle = -1.8
-	
+
 		# rotate the camera in the direction given determined by player_right's value
 		# and only rotate when the player is not directly walking backwards "into" the camera!
 		if player_right != 0:
@@ -316,12 +312,6 @@ func _zoom_camera(var amount):
 				zoom = 0
 			else:
 				zoom += amount
-				
-# force the viewcam to look at the player
-func _look_at_player():
-	var offY = Vector3(0, -0.5, 0)
-	clip_cam.look_at(self.transform.origin + offY, Vector3.UP)
-	view_cam.look_at(self.transform.origin + offY, Vector3.UP)
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):
