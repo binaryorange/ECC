@@ -107,6 +107,10 @@ jump={
  ]
 }
 
+[physics]
+
+3d/physics_engine="Bullet"
+
 [rendering]
 
 quality/shadows/filter_mode=2

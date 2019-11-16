@@ -47,6 +47,9 @@ export (float) var MouseSensitivity = 2
 # the zoom delay is used to disallow the player from changing the camera view super fast
 export (float) var ZoomDelay = 0.5
 
+# this lets us set the minimum distance that the raycast for detecting Confined Spaces will work
+export (float) var MinConfinedSpaceDistance = 2.0
+
 # our local variables
 var cam_up = 0.0
 var cam_right = 0.0
@@ -178,11 +181,11 @@ func _update_camera(delta):
 	
 	# position the gimbal to the player's position, plus the offset
 	if EnableFollowDelay:
-		self.transform.origin = lerp(self.transform.origin, 
-		get_parent().transform.origin + gimbal_offset, 
+		self.global_transform.origin = lerp(self.global_transform.origin, 
+		get_parent().global_transform.origin + gimbal_offset, 
 		FollowDelayWeight)
 	else:
-		self.transform.origin = get_parent().transform.origin + gimbal_offset
+		self.global_transform.origin = get_parent().global_transform.origin + gimbal_offset
 	
 	# position the clip cam
 	clip_cam.transform.origin.z = zoom_level_array[zoom]
@@ -205,8 +208,12 @@ func _update_camera(delta):
 	
 	# check if we are colliding against geometry above the player
 	if $ConfinedSpaceCheck.is_colliding():
-		if !is_in_confined_space:
-			is_in_confined_space = true
+		# calculate the distance and make sure it isn't below the min distance
+		var collider = $ConfinedSpaceCheck.get_collision_point()
+		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
+		if distance.length() >= MinConfinedSpaceDistance:
+			if !is_in_confined_space:
+				is_in_confined_space = true
 	else: # we are not colliding so set it to false
 		if is_in_confined_space:
 			is_in_confined_space = false
@@ -315,7 +322,7 @@ func _zoom_camera(var amount):
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):
-	if !body.is_in_group("Player"):
+	if !body.is_in_group("noclip"):
 		
 		# check to make sure this body doesn't exist in the array.
 		# if it doesn't, we will add it to the array, and set collision_probe_hit to true!
@@ -326,7 +333,7 @@ func _on_CanClipDetector_body_entered(body):
 
 # this tells us when the camera has stopped clipping against walls
 func _on_CanClipDetector_body_exited(body):
-	if !body.is_in_group("Player"):
+	if !body.is_in_group("noclip"):
 		
 		# check array to make sure it is not empty
 		if collision_probe_array.size() != -1:
