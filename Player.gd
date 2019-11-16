@@ -6,6 +6,7 @@ export (float) var TerminalVelocity = -19.80
 export (float) var AccelerationForce = 3
 export (float) var DecelerationForce = 5
 export (float) var JumpForce = 30
+export (NodePath) var FollowCamera
 
 
 var velocity = Vector3(0, 0, 0)
@@ -16,15 +17,16 @@ var h
 var yVelocity = 0
 var oldRot
 var character
-var snap = Vector3(0, 10000, 0)
+var snap = Vector3(0, 1, 0)
 
 var camera
 var is_jumping = false
+var on_platform = false
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	camera = get_node("ECC_ThirdPerson")
+	camera = get_node(FollowCamera)
 	character = get_node(".")
 	oldRot = self.rotation
 
@@ -66,6 +68,7 @@ func _physics_process(delta):
 	velocity.y = yVelocity
 	velocity.z = hv.z
 	
+#	velocity = global_transform.xform(velocity)
 	
 	velocity = move_and_slide_with_snap(velocity, snap, Vector3(0, 1, 0))
 	
@@ -79,7 +82,7 @@ func _physics_process(delta):
 	if is_jumping:
 		snap = Vector3.ZERO
 	else:
-		snap = Vector3(0, 10000, 0)
+		snap = Vector3(0, 1, 0)
 			
 	# limit the y speed
 	if yVelocity <= TerminalVelocity:

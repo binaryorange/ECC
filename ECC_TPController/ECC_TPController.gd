@@ -24,7 +24,7 @@ export (float) var LerpWeight = 0.03
 export (float) var RotationSpeed = 1.75
 
 # export our collision probe size
-export (float) var CollisionProbeSize = 0.5
+export (float) var CollisionProbeSize = 1
 
 # export our max and min camera angles
 export (float) var MaxCameraAngle = 70
@@ -106,12 +106,12 @@ func _ready():
 	# set raycaster as toplevel
 	$ConfinedSpaceCheck.set_as_toplevel(true)
 	
-	raycast_offset = $ConfinedSpaceCheck.transform.origin - get_parent().transform.origin
+	raycast_offset = $ConfinedSpaceCheck.transform.origin - player.transform.origin
 	
 	# store the position offset of the raycast node
 	
 	# store the offset of the gimbal relative to its parent node
-	gimbal_offset = self.transform.origin - get_parent().transform.origin
+	gimbal_offset = self.transform.origin - player.transform.origin
 	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
 	
 	# add the zoom nodes local z transform to the array
@@ -182,10 +182,10 @@ func _update_camera(delta):
 	# position the gimbal to the player's position, plus the offset
 	if EnableFollowDelay:
 		self.global_transform.origin = lerp(self.global_transform.origin, 
-		get_parent().global_transform.origin + gimbal_offset, 
+		player.global_transform.origin + gimbal_offset, 
 		FollowDelayWeight)
 	else:
-		self.global_transform.origin = get_parent().global_transform.origin + gimbal_offset
+		self.global_transform.origin = player.global_transform.origin + gimbal_offset
 	
 	# position the clip cam
 	clip_cam.transform.origin.z = zoom_level_array[zoom]
@@ -219,7 +219,7 @@ func _update_camera(delta):
 			is_in_confined_space = false
 			
 	# position the raycast
-	$ConfinedSpaceCheck.transform.origin = get_parent().transform.origin + raycast_offset
+	$ConfinedSpaceCheck.transform.origin = player.transform.origin + raycast_offset
 
 	# rotate the camera gimbal to the player's rotation
 	if cam_right == 0 and cam_up == 0:
