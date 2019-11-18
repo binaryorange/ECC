@@ -12,15 +12,20 @@ export (NodePath) var FollowCamera
 var velocity = Vector3(0, 0, 0)
 var gravity = 0
 
+var moveSpeed
+
 var v
 var h
 var yVelocity = 0
+var hv
 var oldRot
 var character
 var snap = Vector3(0, 1, 0)
 
 var camera
 var is_jumping = false
+var is_falling = false
+var is_grounded = false
 var on_platform = false
 
 
@@ -29,6 +34,7 @@ func _ready():
 	camera = get_node(FollowCamera)
 	character = get_node(".")
 	oldRot = self.rotation
+	moveSpeed = MoveSpeed
 
 # warning-ignore:unused_argument
 func _physics_process(delta):
@@ -51,16 +57,16 @@ func _physics_process(delta):
 	velocity = move
 	
 	# get the horizontal velocity
-	var hv = velocity
+	hv = velocity
 	hv.y = 0
 	
-	var new_pos = move * MoveSpeed
+	var new_pos = move * moveSpeed
 	var accel = DecelerationForce
 	
 	if (move.dot(hv) > 0):
 		accel = AccelerationForce
 		
-	hv = hv.linear_interpolate(new_pos, accel * MoveSpeed)
+	hv = hv.linear_interpolate(new_pos, accel * moveSpeed)
 	
 	velocity = velocity.normalized()
 	
@@ -68,15 +74,22 @@ func _physics_process(delta):
 	velocity.y = yVelocity
 	velocity.z = hv.z
 	
-#	velocity = global_transform.xform(velocity)
-	
 	velocity = move_and_slide_with_snap(velocity, snap, Vector3(0, 1, 0))
 	
 	if is_on_floor():
-		
 		if Input.is_action_just_pressed("jump") and !is_jumping:
 			yVelocity = JumpForce
 			is_jumping = true
+			
+			
+	if $FloorTester.is_colliding():
+		is_grounded = true
+	else:
+		is_grounded = false
+		
+	if !on_platform:
+		moveSpeed = MoveSpeed
+
 	
 	# change snap depending on jumping state
 	if is_jumping:
@@ -95,6 +108,9 @@ func _physics_process(delta):
 	# reset is_jumping to false while falling
 	if yVelocity >= 0:
 		is_jumping = false
+		is_falling = true
+	else:
+		is_falling = false
 	
 	# rotate the character
 	if h != 0 or v != 0:

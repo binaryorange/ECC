@@ -106,7 +106,7 @@ func _ready():
 	# set raycaster as toplevel
 	$ConfinedSpaceCheck.set_as_toplevel(true)
 	
-	raycast_offset = $ConfinedSpaceCheck.transform.origin - player.transform.origin
+	raycast_offset = $ConfinedSpaceCheck.global_transform.origin - player.global_transform.origin
 	
 	# store the position offset of the raycast node
 	
@@ -143,7 +143,7 @@ func _ready():
 	$ZoomTimer.wait_time = ZoomDelay
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _physics_process(delta):
 	_get_input()
 	_update_camera(delta)
 
@@ -208,18 +208,19 @@ func _update_camera(delta):
 	
 	# check if we are colliding against geometry above the player
 	if $ConfinedSpaceCheck.is_colliding():
-		# calculate the distance and make sure it isn't below the min distance
-		var collider = $ConfinedSpaceCheck.get_collision_point()
-		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
-		if distance.length() >= MinConfinedSpaceDistance:
-			if !is_in_confined_space:
-				is_in_confined_space = true
+		if player.is_grounded:
+			# calculate the distance and make sure it isn't below the min distance
+			var collider = $ConfinedSpaceCheck.get_collision_point()
+			var distance = $ConfinedSpaceCheck.global_transform.origin - collider
+			if distance.length() >= MinConfinedSpaceDistance:
+				if !is_in_confined_space:
+					is_in_confined_space = true
 	else: # we are not colliding so set it to false
 		if is_in_confined_space:
 			is_in_confined_space = false
 			
 	# position the raycast
-	$ConfinedSpaceCheck.transform.origin = player.transform.origin + raycast_offset
+	$ConfinedSpaceCheck.global_transform.origin = player.global_transform.origin + raycast_offset
 
 	# rotate the camera gimbal to the player's rotation
 	if cam_right == 0 and cam_up == 0:

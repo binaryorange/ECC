@@ -57,8 +57,7 @@ material/0 = SubResource( 4 )
 shape = SubResource( 5 )
 
 [node name="FloorTester" type="RayCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0 )
-visible = false
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.04092, 0 )
 enabled = true
 cast_to = Vector3( 0, -1.01, 0 )
 
@@ -66,4 +65,5 @@ cast_to = Vector3( 0, -1.01, 0 )
 light_color = Color( 0.490196, 0.890196, 1, 1 )
 light_energy = 1.5
 shadow_enabled = true
+shadow_bias = 0.69
 omni_range = 16.0
