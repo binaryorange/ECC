@@ -42,20 +42,18 @@ EnableFollowDelay = true
 ZoomDelay = 0.25
 
 [node name="MovingPlatform" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -50 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, -50 )
 RotatePlatform = true
-RotateSpeed = -0.5
 
 [node name="Destination Marker" parent="MovingPlatform" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 12, 24 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -24, 0 )
 
 [node name="MovingPlatform2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 1, -50 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -15 )
 RotatePlatform = true
-RotateSpeed = -0.5
 
 [node name="Destination Marker" parent="MovingPlatform2" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )

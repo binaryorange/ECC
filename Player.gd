@@ -20,7 +20,6 @@ var yVelocity = 0
 var hv
 var oldRot
 var character
-var snap = Vector3(0, 1, 0)
 
 var camera
 var is_jumping = false
@@ -74,28 +73,12 @@ func _physics_process(delta):
 	velocity.y = yVelocity
 	velocity.z = hv.z
 	
-	velocity = move_and_slide_with_snap(velocity, snap, Vector3(0, 1, 0))
+	velocity = move_and_slide(velocity, Vector3(0, 1, 0))
 	
 	if is_on_floor():
 		if Input.is_action_just_pressed("jump") and !is_jumping:
 			yVelocity = JumpForce
 			is_jumping = true
-			
-			
-	if $FloorTester.is_colliding():
-		is_grounded = true
-	else:
-		is_grounded = false
-		
-	if !on_platform:
-		moveSpeed = MoveSpeed
-
-	
-	# change snap depending on jumping state
-	if is_jumping:
-		snap = Vector3.ZERO
-	else:
-		snap = Vector3(0, 1, 0)
 			
 	# limit the y speed
 	if yVelocity <= TerminalVelocity:

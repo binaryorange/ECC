@@ -12,7 +12,7 @@ onready var platform = $"."
 var change_parent = false
 var reparenting = false
 var on_platform
-var player
+var entity
 var offset = Vector3.ZERO
 var initial_pos = Vector3()
 
@@ -32,33 +32,27 @@ func _ready():
 func _process(delta):
 	if RotatePlatform:
 		self.rotate_y(RotateSpeed * delta)
-		
-		var distance = initial_pos - destination
-		var current_pos = self.global_transform.origin
-	
-		# if the player is on the platform and it is rotating, we want to make sure we
-		# allow the player to retain independent rotation when they are moving on the platform
-		if player:
 			
-			# ensure we are actually ON the platform
-			if on_platform:
-				
-				# ensure we are moving
-				if player.h != 0 or player.v != 0:
-					player.set_rotation(player.rotation - self.rotation)
+		# if the entity is on the platform and it is rotating, we want to make sure we
+		# allow the entity to retain independent rotation when they are moving on the platform
+		if entity and entity.on_platform:
+			# ensure we are moving
+			if entity.h != 0 or entity.v != 0:
+				entity.set_rotation(entity.rotation - rotation)
 
-					
 func _init_moving():
 	
-	tween.interpolate_property(self, "translation", initial_pos, destination, TravelDuration, Tween.TRANS_QUAD, Tween.EASE_IN_OUT, IdleDuration)
-	tween.interpolate_property(self, "translation", destination, initial_pos, TravelDuration, Tween.TRANS_QUAD, Tween.EASE_IN_OUT, TravelDuration + IdleDuration * 2)
+	tween.interpolate_property(self, "translation", initial_pos, destination, TravelDuration, Tween.TRANS_EXPO, Tween.EASE_IN_OUT, IdleDuration)
+	tween.interpolate_property(self, "translation", destination, initial_pos, TravelDuration, Tween.TRANS_EXPO, Tween.EASE_IN_OUT, TravelDuration + IdleDuration * 2)
 	tween.start()
 		 
 func _on_EnterPlatform_body_entered(body):
 	if body.is_in_group("inherit_platform") and !change_parent and !reparenting:
-		change_parent = true
-		reparenting = true
-		call_deferred("do_enter", body)
+		if !body.on_platform:
+			body.on_platform = true
+			change_parent = true
+			reparenting = true
+			call_deferred("do_enter", body)
 		
 func do_enter(body):
 		var t = body.global_transform   
@@ -67,20 +61,22 @@ func do_enter(body):
 		body.global_transform = t
 		reparenting = false
 		on_platform = true
-		player = get_node(body.name)
+		entity = get_node(body.name)
 
 
 func do_exit(body):
-		
 		on_platform = false
 		var t = body.global_transform        
 		self.remove_child(body)
 		get_parent().add_child(body)
 		body.global_transform = t
 		reparenting = false
+		entity = null
 
 func _on_EnterPlatform_body_exited(body):
 	if body.is_in_group("inherit_platform") and change_parent and !reparenting:  
-		change_parent = false
-		reparenting = true
-		call_deferred("do_exit", body)
+		if body.on_platform:
+			body.on_platform = false
+			change_parent = false
+			reparenting = true
+			call_deferred("do_exit", body)
