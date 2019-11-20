@@ -208,13 +208,12 @@ func _update_camera(delta):
 	
 	# check if we are colliding against geometry above the player
 	if $ConfinedSpaceCheck.is_colliding():
-		if player.is_grounded:
-			# calculate the distance and make sure it isn't below the min distance
-			var collider = $ConfinedSpaceCheck.get_collision_point()
-			var distance = $ConfinedSpaceCheck.global_transform.origin - collider
-			if distance.length() >= MinConfinedSpaceDistance:
-				if !is_in_confined_space:
-					is_in_confined_space = true
+		# calculate the distance and make sure it isn't below the min distance
+		var collider = $ConfinedSpaceCheck.get_collision_point()
+		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
+		if distance.length() >= MinConfinedSpaceDistance:
+			if !is_in_confined_space:
+				is_in_confined_space = true
 	else: # we are not colliding so set it to false
 		if is_in_confined_space:
 			is_in_confined_space = false

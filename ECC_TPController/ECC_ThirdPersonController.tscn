@@ -43,7 +43,7 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 [node name="ViewCamera" type="Camera" parent="X Gimbal" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 current = true
 fov = 60.0
 near = 0.01
@@ -74,7 +74,7 @@ shape = SubResource( 2 )
 [node name="ClippedCamera" type="ClippedCamera" parent="X Gimbal/ClipCameraTarget" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 doppler_tracking = 1
 fov = 60.0
 near = 0.01
@@ -84,17 +84,17 @@ process_mode = 1
 [node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 
 [node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12 )
 
 [node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18 )
 
 [node name="ZoomTimer" type="Timer" parent="." groups=[
 "noclip",
