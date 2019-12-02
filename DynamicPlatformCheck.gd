@@ -53,14 +53,19 @@ func _check_for_platform():
 		if player.floor_test_array[i].is_colliding():
 			var collider = player.floor_test_array[i].get_collider()
 			if collider.is_in_group(Group):
-				# parent is two levels up, so store it properly
-				platform = collider.get_node("../../")
+				# first we check if platform is already used, if it is, we
+				# reassign it to a different platform
+				if platform:
+					if platform != collider.get_node("../../"):
+						# ensure we tell the first platform we are OFF of it...
+						platform.on_platform = false
 						
-				# now check if platform is not null, and if it isn't,
-				# we will adjust it so that it properly assigns the new platform
-				if platform != collider.get_node("../../"):
+						print("old platform: " + str(platform.name))
+						platform = collider.get_node("../../")
+						print("new platform: " + str(platform.name))
+				else:
 					platform = collider.get_node("../../")
-					print("new platform: " + str(platform.name))
+					print("landing on " + str(platform.name))
 				
 				# now trigger the reparenting
 				if !platform.on_platform:
