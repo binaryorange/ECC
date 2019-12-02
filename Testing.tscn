@@ -34,30 +34,33 @@ material = ExtResource( 2 )
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( -1, 0, -3.25841e-007, 0, 1, 0, 3.25841e-007, 0, -1, -17, 5, -46 )
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -17, 5, -46 )
 input_capture_on_drag = true
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -1, 0, -3.25841e-007, 0, 1, 0, 3.25841e-007, 0, -1, -16.75, 7.5, -45.75 )
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -16.75, 7.5, -45.75 )
 ClipCameraException = NodePath("../TestPlayer")
 CollisionProbeSize = 2.0
 EnableFollowDelay = true
 ZoomDelay = 0.25
 
 [node name="MovingPlatform" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, -50 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 17, -46 )
 RotatePlatform = true
 
 [node name="Destination Marker" parent="MovingPlatform" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -24, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17, 0 )
+
+[node name="HelperMesh" parent="MovingPlatform/Destination Marker" index="0"]
+visible = false
 
 [node name="MovingPlatform2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -15 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1, -15 )
 RotatePlatform = true
 
 [node name="Destination Marker" parent="MovingPlatform2" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -31 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )
@@ -103,7 +106,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling16" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -17, 14, 2 )
+transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -17, 14, 2 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -116,7 +119,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling17" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -27, 17, 2 )
+transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -27, 17, 2 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -129,7 +132,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling18" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-008, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-007, -40, 20, 0 )
+transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -40, 20, 0 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -207,7 +210,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling3" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -1, 0, 10, -4.37114e-008, 0, 0, 0, 10, -34, 10, -10 )
+transform = Transform( -4.37114e-07, -1, 0, 10, -4.37114e-08, 0, 0, 0, 10, -34, 10, -10 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -220,7 +223,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling4" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -1, 0, 10, -4.37114e-008, 0, 0, 0, 10, -23, 10, -10 )
+transform = Transform( -4.37114e-07, -1, 0, 10, -4.37114e-08, 0, 0, 0, 10, -23, 10, -10 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -233,7 +236,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling6" type="MeshInstance" parent="."]
-transform = Transform( 1.91069e-014, 4.37114e-008, -10, 10, -4.37114e-008, 0, -4.37114e-007, -1, -4.37114e-007, -23, 10, -1 )
+transform = Transform( 1.91069e-14, 4.37114e-08, -10, 10, -4.37114e-08, 0, -4.37114e-07, -1, -4.37114e-07, -23, 10, -1 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -246,7 +249,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling5" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -0.5, 0, 10, -2.18557e-008, 0, 0, 0, 10, -12.5, 10, -10 )
+transform = Transform( -4.37114e-07, -0.5, 0, 10, -2.18557e-08, 0, 0, 0, 10, -12.5, 10, -10 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -259,7 +262,7 @@ __meta__ = {
 shape = SubResource( 5 )
 
 [node name="Ceiling11" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -0.15, 0, 10, -6.55671e-009, 0, 0, 0, 10, -42.5, 10, -23 )
+transform = Transform( -4.37114e-07, -0.15, 0, 10, -6.55671e-09, 0, 0, 0, 10, -42.5, 10, -23 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -272,7 +275,7 @@ __meta__ = {
 shape = SubResource( 6 )
 
 [node name="Ceiling12" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-007, -0.15, 0, 10, -6.55671e-009, 0, 0, 0, 10, -51.5, 10, -10 )
+transform = Transform( -4.37114e-07, -0.15, 0, 10, -6.55671e-09, 0, 0, 0, 10, -51.5, 10, -10 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -285,7 +288,7 @@ __meta__ = {
 shape = SubResource( 6 )
 
 [node name="Ceiling13" type="MeshInstance" parent="."]
-transform = Transform( 1.91069e-014, 6.55671e-009, 10, 10, -6.55671e-009, 0, 4.37114e-007, 0.15, -4.37114e-007, -44.5, 10, -9 )
+transform = Transform( 1.91069e-14, 6.55671e-09, 10, 10, -6.55671e-09, 0, 4.37114e-07, 0.15, -4.37114e-07, -44.5, 10, -9 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -298,7 +301,7 @@ __meta__ = {
 shape = SubResource( 6 )
 
 [node name="Ceiling14" type="MeshInstance" parent="."]
-transform = Transform( 1.91069e-014, 6.55671e-009, 10, 10, -6.55671e-009, 0, 4.37114e-007, 0.15, -4.37114e-007, -52.5, 10, -20 )
+transform = Transform( 1.91069e-14, 6.55671e-09, 10, 10, -6.55671e-09, 0, 4.37114e-07, 0.15, -4.37114e-07, -52.5, 10, -20 )
 mesh = SubResource( 4 )
 material/0 = null
 __meta__ = {
@@ -375,13 +378,21 @@ shadow_enabled = true
 omni_range = 7.9
 
 [node name="RotatingPlatform" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -77 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 3, -66 )
+RotatePlatform = false
+
+[node name="RotatingPlatform4" parent="." instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -66 )
+
+[node name="RotatingPlatform5" parent="." instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34.9171, 2.95961, -80.9476 )
 
 [node name="RotatingPlatform2" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 10, -77 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 8, -66 )
+RotateSpeed = -0.75
 
 [node name="RotatingPlatform3" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 16, -57 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 14, -46 )
 
 [editable path="MovingPlatform"]
 

@@ -8,7 +8,6 @@ export (float) var DecelerationForce = 5
 export (float) var JumpForce = 30
 export (NodePath) var FollowCamera
 
-
 var velocity = Vector3(0, 0, 0)
 var gravity = 0
 
@@ -18,7 +17,6 @@ var v
 var h
 var yVelocity = 0
 var hv
-var oldRot
 var character
 
 var camera
@@ -26,19 +24,29 @@ var is_jumping = false
 var is_falling = false
 var is_grounded = false
 var on_platform = false
+var stepping_on = false
+
+var floor_test_array = []
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	camera = get_node(FollowCamera)
 	character = get_node(".")
-	oldRot = self.rotation
 	moveSpeed = MoveSpeed
+	
+	for i in range ($FloorTestArray.get_child_count()):
+		floor_test_array.insert(floor_test_array.size(), $FloorTestArray.get_child(i))
+		floor_test_array[i].add_exception(self)
+		print("added " + str(floor_test_array[i].name))
 
 # warning-ignore:unused_argument
 func _physics_process(delta):
-	gravity = Gravity
+	
+
+	
 	# account for gravity
+	gravity = Gravity
 	yVelocity += gravity
 	
 	# get the input
