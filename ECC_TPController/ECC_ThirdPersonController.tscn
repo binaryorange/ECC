@@ -16,7 +16,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 2.5, 0.25 )
 script = ExtResource( 1 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
-ZoomLevels = [ NodePath("X Gimbal/ClipCameraTarget/Zoom1"), NodePath("X Gimbal/ClipCameraTarget/Zoom2"), NodePath("X Gimbal/ClipCameraTarget/Zoom3") ]
 
 [node name="CheckInputs" type="Node" parent="." groups=[
 "noclip",
@@ -81,17 +80,19 @@ near = 0.01
 margin = 0.1
 process_mode = 1
 
-[node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
+[node name="ZoomMarkers" type="Spatial" parent="X Gimbal/ClipCameraTarget"]
+
+[node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
 
-[node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
+[node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12 )
 
-[node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget" groups=[
+[node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 18 )

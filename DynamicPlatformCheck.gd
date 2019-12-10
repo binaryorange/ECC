@@ -26,6 +26,8 @@ var new_parent = null
 func _ready():
 	# ensure we stored the player
 	print("Stored the node " + str(player.name))
+	# ensure we stored the player's parent
+	print("Stored the player's default parent as " + str(default_parent.name))
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -39,7 +41,7 @@ func _physics_process(delta):
 		
 		# when we are on a platform, subtract its rotation from our rotation when moving
 		if platform.RotatePlatform:
-			if player.h != 0 or player.v != 0:
+			if player.stickInput.x != 0 or player.stickInput.y != 0:
 				player.rotation = player.rotation - platform.rotation
 	
 	# check for dynamic platform

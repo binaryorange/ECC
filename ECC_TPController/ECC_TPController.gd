@@ -14,9 +14,6 @@ export (NodePath) var ClipCamera
 # so that we don't clip to ourselves!
 export (NodePath) var ClipCameraException
 
-# export our zoom levels in an array
-export(Array, NodePath) var ZoomLevels
-
 # export our lerpweight for the camera
 export (float) var LerpWeight = 0.03
 
@@ -72,6 +69,7 @@ var counting_down = false
 var player
 var raycast_offset 
 var rot_y_angle = 0
+var stickInput = Vector2()
 
 # hide these when we are running the game
 var helper_mesh
@@ -114,13 +112,16 @@ func _ready():
 	gimbal_offset = self.transform.origin - player.transform.origin
 	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
 	
-	# add the zoom nodes local z transform to the array
-	for z in ZoomLevels.size():
-		zoom_level_array.insert(z, get_node(ZoomLevels[z]).transform.origin.z)
+	# find the zoom markers under the "ZoomMarkers" node, and store their origin.z component
+	# in our zoom_level_array as our Zoom Levels
+	var zoom_marker = $"X Gimbal/ClipCameraTarget/ZoomMarkers"
+	var zoom_marker_count = zoom_marker.get_child_count()
+	for z in zoom_marker_count:
+		zoom_level_array.insert(z, zoom_marker.get_child(z).transform.origin.z)
 		print("Added zoom value " + str(zoom_level_array[z]) + " to the zoom array")
 		
 	# ensure we set the max zoom level for the zoom array
-	max_zoom_level = ZoomLevels.size()
+	max_zoom_level = zoom_marker_count
 	print("Max Zoom Level set to " + str(max_zoom_level))
 	
 	# set the default zoom level of the cameras
@@ -163,6 +164,12 @@ func _get_input():
 		# store the up movement
 		cam_up = Input.get_action_strength("cam_look_up") - Input.get_action_strength("cam_look_down")
 		
+		# now store the movement in the input vector
+		stickInput = Vector2(cam_right, cam_up)
+		
+		# now apply the deadzone
+		stickInput = GameFunctions.apply_deadzone(stickInput, GameManager.StickDeadzone)
+		
 		# zoom the camera
 		if Input.is_action_just_pressed("zoom"):
 			_zoom_camera(1)
@@ -179,6 +186,23 @@ func _get_input():
 # update the camera's position and rotation
 func _update_camera(delta):
 	
+	# update the camera's position
+	_position_camera()
+	
+	# now update the camera's rotation
+	_rotate_camera(delta)
+	
+	# now check for occluding geometry
+	_check_for_occlusion()
+	
+	# now check for any confined spaces
+	_confined_space_check()
+	
+	# now rotate to the player
+	_rotate_to_player()
+
+# position the camera
+func _position_camera():
 	# position the gimbal to the player's position, plus the offset
 	if EnableFollowDelay:
 		self.global_transform.origin = lerp(self.global_transform.origin, 
@@ -190,6 +214,7 @@ func _update_camera(delta):
 	# position the clip cam
 	clip_cam.transform.origin.z = zoom_level_array[zoom]
 	
+func _rotate_camera(delta):
 	# clamp the x rotation
 	var x_gimbal_rotation = x_gimbal.rotation_degrees
 	x_gimbal_rotation.x = clamp(x_gimbal_rotation.x, MinCameraAngle, MaxCameraAngle)
@@ -197,43 +222,15 @@ func _update_camera(delta):
 	
 	# set the rotational values of the gimbals
 	if !mouse_captured:
-		self.rotate_y(cam_right * RotationSpeed * delta)
-		x_gimbal.rotate_x(cam_up * RotationSpeed * delta)
+		self.rotate_y(stickInput.x * RotationSpeed * delta)
+		x_gimbal.rotate_x(stickInput.y * RotationSpeed * delta)
 	elif mouse_captured and mouse_moved:
 		self.rotate_y(cam_right * MouseSensitivity * delta)
 		x_gimbal.rotate_x(cam_up * MouseSensitivity * delta)
-	
-	# now check for occluding geometry
-	_check_for_occlusion()
-	
-	# check if we are colliding against geometry above the player
-	if $ConfinedSpaceCheck.is_colliding():
-		# calculate the distance and make sure it isn't below the min distance
-		var collider = $ConfinedSpaceCheck.get_collision_point()
-		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
-		if distance.length() >= MinConfinedSpaceDistance:
-			if !is_in_confined_space:
-				is_in_confined_space = true
-	else: # we are not colliding so set it to false
-		if is_in_confined_space:
-			is_in_confined_space = false
-			
-	# position the raycast
-	$ConfinedSpaceCheck.global_transform.origin = player.global_transform.origin + raycast_offset
-
-	# rotate the camera gimbal to the player's rotation
-	if cam_right == 0 and cam_up == 0:
-		if player_right > 0:
-			rot_y_angle = 1.8
-		elif player_right < 0:
-			rot_y_angle = -1.8
-
-		# rotate the camera in the direction given determined by player_right's value
-		# and only rotate when the player is not directly walking backwards "into" the camera!
-		if player_right != 0:
-			self.rotate_y((rot_y_angle/100) * abs(player_right))
-
-
+		
+	# reset mouse_moved so that we don't update the gimbal's rotation automatically every frame
+	# while using the mouse instead of the gamepad
+	mouse_moved = false
 
 # check for occluding objects
 func _check_for_occlusion():
@@ -271,10 +268,39 @@ func _check_for_occlusion():
 	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
 	zoom_level_array[zoom] - ViewCamDistanceModifier, 
 	LerpWeight)
+
+
+# check for confined spaces
+func _confined_space_check():
+	# check if we are colliding against geometry above the player
+	if $ConfinedSpaceCheck.is_colliding():
+		# calculate the distance and make sure it isn't below the min distance
+		var collider = $ConfinedSpaceCheck.get_collision_point()
+		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
+		if distance.length() >= MinConfinedSpaceDistance:
+			if !is_in_confined_space:
+				is_in_confined_space = true
+	else: # we are not colliding so set it to false
+		if is_in_confined_space:
+			is_in_confined_space = false
+			
+	# position the raycast
+	$ConfinedSpaceCheck.global_transform.origin = player.global_transform.origin + raycast_offset
 	
-	# reset mouse_moved so that we don't update the gimbal's rotation automatically every frame
-	# while using the mouse instead of the gamepad
-	mouse_moved = false
+# rotate to orbit the player
+func _rotate_to_player():
+	if player.velocity.length() > 5:
+		# rotate the camera gimbal to the player's rotation
+		if stickInput.x == 0 and stickInput.y == 0:
+			if player.stickInput.x < 0:
+				rot_y_angle = 1.8
+			elif player.stickInput.x > 0:
+				rot_y_angle = -1.8
+	
+			# rotate the camera in the direction given determined by player_right's value
+			# and only rotate when the player is not directly walking backwards "into" the camera!
+			if player.stickInput.x != 0:
+				self.rotate_y((rot_y_angle/100) * abs(player.stickInput.x * 0.95))
 
 # support mouse input
 func _input(event):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://TestPlayer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://lightblue.tres" type="Material" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://ECC_TPController/ECC_ThirdPersonController.tscn" type="PackedScene" id=5]
 [ext_resource path="res://MovingPlatform.tscn" type="PackedScene" id=6]
 [ext_resource path="res://RotatingPlatform.tscn" type="PackedScene" id=7]
+[ext_resource path="res://BouncyBally.tscn" type="PackedScene" id=8]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0.219608, 1, 0, 1 )
@@ -44,23 +45,6 @@ ClipCameraException = NodePath("../TestPlayer")
 CollisionProbeSize = 2.0
 EnableFollowDelay = true
 ZoomDelay = 0.25
-
-[node name="MovingPlatform" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 17, -46 )
-RotatePlatform = true
-
-[node name="Destination Marker" parent="MovingPlatform" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -17, 0 )
-
-[node name="HelperMesh" parent="MovingPlatform/Destination Marker" index="0"]
-visible = false
-
-[node name="MovingPlatform2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1, -15 )
-RotatePlatform = true
-
-[node name="Destination Marker" parent="MovingPlatform2" index="2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -31 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )
@@ -385,7 +369,7 @@ RotatePlatform = false
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -66 )
 
 [node name="RotatingPlatform5" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -34.9171, 2.95961, -80.9476 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -86 )
 
 [node name="RotatingPlatform2" parent="." instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 8, -66 )
@@ -394,6 +378,51 @@ RotateSpeed = -0.75
 [node name="RotatingPlatform3" parent="." instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 14, -46 )
 
+[node name="MovingPlatform" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 16, -46 )
+
+[node name="Destination Marker" parent="MovingPlatform" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 27 )
+
+[node name="MovingPlatform5" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 16, -46 )
+
+[node name="Destination Marker" parent="MovingPlatform5" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15.672, 0 )
+
+[node name="MovingPlatform2" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 16, 18 )
+
+[node name="Destination Marker" parent="MovingPlatform2" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -27 )
+
+[node name="MovingPlatform3" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 16, 18 )
+
+[node name="Destination Marker" parent="MovingPlatform3" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0 )
+
+[node name="MovingPlatform4" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 16, 18 )
+
+[node name="Destination Marker" parent="MovingPlatform4" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 0 )
+
+[node name="BouncyBally" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 3, -10 )
+
+[node name="BouncyBally2" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 3, -13 )
+
+[node name="BouncyBally3" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 5, -11 )
+
 [editable path="MovingPlatform"]
 
+[editable path="MovingPlatform5"]
+
 [editable path="MovingPlatform2"]
+
+[editable path="MovingPlatform3"]
+
+[editable path="MovingPlatform4"]

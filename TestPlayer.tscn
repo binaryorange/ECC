@@ -32,7 +32,7 @@ emission_operator = 0
 emission_on_uv2 = false
 
 [sub_resource type="BoxShape" id=6]
-extents = Vector3( 1, 2, 1 )
+extents = Vector3( 1, 2.00159, 1 )
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
