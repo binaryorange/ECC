@@ -289,7 +289,7 @@ func _confined_space_check():
 	
 # rotate to orbit the player
 func _rotate_to_player():
-	if player.velocity.length() > 5:
+	if player.velocity.length() > 5 and !player.is_on_wall():
 		# rotate the camera gimbal to the player's rotation
 		if stickInput.x == 0 and stickInput.y == 0:
 			if player.stickInput.x < 0:

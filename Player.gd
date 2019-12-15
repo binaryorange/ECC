@@ -2,10 +2,13 @@ extends KinematicBody
 
 export (float) var MoveSpeed = 3
 export (float) var Gravity = -0.98
+export (float) var Downforce = -2.0
 export (float) var TerminalVelocity = -19.80
 export (float) var AccelerationForce = 3
 export (float) var DecelerationForce = 5
+export (float) var SlipForce = 3.0
 export (float) var JumpForce = 30
+export (bool) var EnableSlippy = true
 export (NodePath) var FollowCamera
 
 var velocity = Vector3(0, 0, 0)
@@ -23,12 +26,11 @@ var camera
 var is_jumping = false
 var is_falling = false
 var is_grounded = false
-var on_platform = false
-var stepping_on = false
 
 var floor_test_array = []
 
 var stickInput = Vector2()
+var old_velocity = Vector3()
 
 
 # Called when the node enters the scene tree for the first time.
@@ -44,17 +46,21 @@ func _ready():
 
 # warning-ignore:unused_argument
 func _physics_process(delta):
-	# account for gravity
-	gravity = Gravity
-	yVelocity += gravity
+
 	
 	# get our input
 	_get_input()
 	
 	if is_on_floor():
-		if Input.is_action_just_pressed("jump") and !is_jumping:
-			yVelocity = JumpForce
-			is_jumping = true
+		yVelocity = Downforce
+	else:
+		# account for gravity
+		gravity = Gravity
+		yVelocity += gravity
+		
+	if Input.is_action_just_pressed("jump") and !is_jumping and is_on_floor():
+		yVelocity = JumpForce
+		is_jumping = true
 			
 	# limit the y speed
 	if yVelocity <= TerminalVelocity:
@@ -95,6 +101,7 @@ func _get_input():
 	var x = camera.transform.basis.x * stickInput.x
 	var z = camera.transform.basis.z * stickInput.y
 	
+	
 	# create our movement vector
 	var move = x + z
 	
@@ -121,6 +128,16 @@ func _get_input():
 	velocity.x = hv.x
 	velocity.y = yVelocity
 	velocity.z = hv.z
+	
+
+	
+	if EnableSlippy:
+		if stickInput.x != 0 or stickInput.y != 0:
+			# cache the old velocity
+			old_velocity = velocity * 1.35
+		else:
+			old_velocity = move_and_slide(old_velocity, Vector3(0, 1, 0), false, 4, 0.79, false)
+			old_velocity *= 0.99
 	
 	velocity = move_and_slide(velocity, Vector3(0, 1, 0), false, 4, 0.79, false)
 

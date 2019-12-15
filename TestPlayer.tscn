@@ -6,16 +6,14 @@
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 0.9, 0.192282, 0.9 )
 
-[sub_resource type="CubeMesh" id=2]
-size = Vector3( 2, 4, 2 )
+[sub_resource type="CapsuleMesh" id=2]
+mid_height = 2.0
 
 [sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 0, 1, 0.952941, 1 )
-metallic_specular = 1.0
-roughness = 0.67
+albedo_color = Color( 0, 0.976471, 1, 1 )
 emission_enabled = true
-emission = Color( 0, 0.6, 1, 1 )
-emission_energy = 5.0
+emission = Color( 0, 0.976471, 1, 1 )
+emission_energy = 1.0
 emission_operator = 0
 emission_on_uv2 = false
 
@@ -31,8 +29,8 @@ emission_energy = 1.0
 emission_operator = 0
 emission_on_uv2 = false
 
-[sub_resource type="BoxShape" id=6]
-extents = Vector3( 1, 2.00159, 1 )
+[sub_resource type="CapsuleShape" id=6]
+height = 2.01
 
 [node name="TestPlayer" type="KinematicBody" groups=[
 "Player",
@@ -55,19 +53,21 @@ shape = SubResource( 1 )
 [node name="Body" type="MeshInstance" parent="." groups=[
 "Player",
 ]]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 mesh = SubResource( 2 )
 material/0 = SubResource( 3 )
 
 [node name="Nose" type="MeshInstance" parent="Body" groups=[
 "Player",
 ]]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.25, 0, 1.25, -1 )
+transform = Transform( 0.5, 0, 0, 0, -2.18557e-08, 0.25, 0, -0.5, -1.09278e-08, 0, -0.956374, -0.886198 )
 mesh = SubResource( 4 )
 material/0 = SubResource( 5 )
 
 [node name="CollisionShape" type="CollisionShape" parent="." groups=[
 "Player",
 ]]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 6 )
 
 [node name="OmniLight" type="OmniLight" parent="."]
