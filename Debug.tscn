@@ -1,0 +1,204 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Debug.gd" type="Script" id=1]
+
+[sub_resource type="Theme" id=5]
+
+[node name="TopPanel" type="Panel"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_right = 1920.0
+margin_bottom = 1080.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Debug" type="Panel" parent="."]
+visible = false
+self_modulate = Color( 1, 1, 1, 0.411765 )
+margin_left = -4.26048
+margin_top = -6.44577
+margin_right = 728.74
+margin_bottom = 879.554
+theme = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Debug Panel" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 9.0
+margin_right = 729.0
+margin_bottom = 39.0
+text = "DEBUGGING PANEL -- PLAYER AND WORLD INFORMATION
+"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerInfo" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 57.0
+margin_right = 729.0
+margin_bottom = 75.0
+text = "-=- PLAYER INFORMATION -=-"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Velocity" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 76.0
+margin_right = 729.0
+margin_bottom = 94.0
+text = "Velocity"
+
+[node name="Acceleration" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 94.0
+margin_right = 729.0
+margin_bottom = 112.0
+text = "Acceleration"
+
+[node name="Deceleration" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 112.0
+margin_right = 729.0
+margin_bottom = 130.0
+text = "Deceleration"
+
+[node name="Animation" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 130.0
+margin_right = 729.0
+margin_bottom = 148.0
+text = "Animation (placeholder spot for now)"
+
+[node name="CollisionState" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 148.0
+margin_right = 729.0
+margin_bottom = 166.0
+text = "Collision State"
+
+[node name="Grounded" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 166.0
+margin_right = 729.0
+margin_bottom = 184.0
+text = "Grounded"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Falling" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 184.0
+margin_right = 729.0
+margin_bottom = 202.0
+text = "Falling"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Jumping" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 202.0
+margin_right = 729.0
+margin_bottom = 220.0
+text = "Jumping"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanSlide" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 220.0
+margin_right = 729.0
+margin_bottom = 238.0
+text = "Can Slide"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Parent" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 238.0
+margin_right = 729.0
+margin_bottom = 256.0
+text = "Parent"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Position" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 256.0
+margin_right = 729.0
+margin_bottom = 274.0
+text = "Position"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Rotation" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 274.0
+margin_right = 729.0
+margin_bottom = 292.0
+text = "Rotation"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WorldInfo" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 310.36
+margin_right = 729.0
+margin_bottom = 328.36
+text = "-=- WORLD INFORMATION -=-"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WorldName" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 328.36
+margin_right = 729.0
+margin_bottom = 346.36
+text = "World Name"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Objects" type="RichTextLabel" parent="Debug"]
+margin_left = 7.0
+margin_top = 346.36
+margin_right = 729.0
+margin_bottom = 364.36
+text = "Objects In World"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HideInfo" type="Button" parent="Debug"]
+margin_left = 519.468
+margin_top = 837.766
+margin_right = 722.468
+margin_bottom = 875.766
+text = "HIDE DEBUG INFO"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ShowInfo" type="Button" parent="."]
+margin_left = 15.0
+margin_top = 13.0
+margin_right = 218.0
+margin_bottom = 51.0
+text = "SHOW DEBUG INFO"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="pressed" from="Debug/HideInfo" to="." method="_on_HideInfo_pressed"]
+[connection signal="pressed" from="ShowInfo" to="." method="_on_ShowInfo_pressed"]

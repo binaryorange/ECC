@@ -18,9 +18,9 @@ func _ready():
 
 func _on_PlayerOn_body_entered(body):
 	if body.is_in_group("Player"):
-		body.EnableSlippy = true
+		body.can_slide = true
 
 
 func _on_PlayerOn_body_exited(body):
 	if body.is_in_group("Player"):
-		body.EnableSlippy = false
+		body.can_slide = false

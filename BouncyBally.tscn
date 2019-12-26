@@ -5,6 +5,8 @@
 [sub_resource type="SphereMesh" id=2]
 
 [node name="BouncyBally" type="RigidBody"]
+mass = 0.0102041
+can_sleep = false
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
