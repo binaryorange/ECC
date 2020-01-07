@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 0.25, 3, 0.25 )
+
+[node name="Pole" type="RigidBody"]
+mass = 10.0
+can_sleep = false
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 0.25, 0, 0, 0, 3, 0, 0, 0, 0.25, 0, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 2 )

@@ -79,7 +79,7 @@ func _physics_process(delta):
 		yVelocity = TerminalVelocity
 
 	if is_on_ceiling():
-		yVelocity += Gravity * 3
+		yVelocity = TerminalVelocity/4
 	
 	# reset is_jumping to false while falling
 	if yVelocity < 0:
@@ -149,11 +149,7 @@ func _get_input(delta):
 					accel = AccelerationForce
 					accel_time = 0.1
 		else:
-			if accel != AccelerationForce:
-				accel_time *= 1.09
-				accel = accel_time
-				if accel >= AccelerationForce:
-					accel = AccelerationForce
+			accel = AccelerationForce
 	else:
 		accel_time = 0.1
 		accel = DecelerationForce
@@ -168,7 +164,7 @@ func _get_input(delta):
 	
 	new_velocity = velocity
 	
-	new_velocity = move_and_slide(new_velocity, Vector3(0, 1, 0), false, 4, 0.79, false)
+	new_velocity = move_and_slide(new_velocity, Vector3(0, 1, 0), true, 4, 0.79, false)
 	
 	# always ensure we have the y velocity correct
 	new_velocity.y = yVelocity

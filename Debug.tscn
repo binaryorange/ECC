@@ -2,15 +2,15 @@
 
 [ext_resource path="res://Debug.gd" type="Script" id=1]
 
-[sub_resource type="Theme" id=5]
+[sub_resource type="Theme" id=1]
 
 [node name="TopPanel" type="Panel"]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_right = 1920.0
-margin_bottom = 1080.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 script = ExtResource( 1 )
 __meta__ = {
-"_edit_use_anchors_": false
+"_edit_use_anchors_": true
 }
 
 [node name="Debug" type="Panel" parent="."]
@@ -20,7 +20,7 @@ margin_left = -4.26048
 margin_top = -6.44577
 margin_right = 728.74
 margin_bottom = 879.554
-theme = SubResource( 5 )
+theme = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

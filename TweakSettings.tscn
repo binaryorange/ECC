@@ -1,0 +1,35 @@
+[gd_scene format=2]
+
+[node name="TweakSettings" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="ShowPanel" type="Button" parent="."]
+anchor_left = 0.552083
+anchor_top = 0.0185185
+anchor_right = 0.635417
+anchor_bottom = 0.0555556
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Panel" type="Panel" parent="."]
+self_modulate = Color( 1, 1, 1, 0.415686 )
+anchor_left = 0.541667
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="HidePanel" type="Button" parent="Panel"]
+anchor_left = 0.795455
+anchor_top = 0.944444
+anchor_right = 0.977273
+anchor_bottom = 0.981481
+__meta__ = {
+"_edit_use_anchors_": true
+}
