@@ -83,6 +83,8 @@ var mouse_moved = false
 # we use this array to determine if there are more than one bodies in the CollisionProbe.
 var collision_probe_array = []
 
+var new_lerp_weight
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	
@@ -142,6 +144,8 @@ func _ready():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		
 	$ZoomTimer.wait_time = ZoomDelay
+	
+	new_lerp_weight = LerpWeight
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
@@ -244,13 +248,12 @@ func _check_for_occlusion():
 			can_clip = true
 		else:
 			can_clip = false
-
+			
+	# get the clip cam's clip offset
+	var clip_offset = clip_cam.get_clip_offset()
 		
 	# if we are clipping, set the view cam's local z to the clip cam's information
 	if can_clip:
-		
-		# get the clip cam's clip offset
-		var clip_offset = clip_cam.get_clip_offset()
 	
 		# set the view cam's position
 		if clip_offset > 0:
@@ -258,16 +261,22 @@ func _check_for_occlusion():
 			# alert the collision probe that we are clipping
 			is_clipping = true
 			
-			# show the target
-			view_cam.transform.origin.z = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
-				
+			# position the camera
+			var new_distance = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+			
+			if new_distance < view_cam.transform.origin.z:
+				view_cam.transform.origin.z = new_distance
+			else:
+				new_lerp_weight = LerpWeight * 0.25
+	
 		else:
 			is_clipping = false
+			new_lerp_weight = LerpWeight
 			
 	# position the camera to the current zoom level from the zoom level array
 	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
 	zoom_level_array[zoom] - ViewCamDistanceModifier, 
-	LerpWeight)
+	new_lerp_weight)
 
 
 # check for confined spaces
@@ -355,7 +364,7 @@ func _on_CanClipDetector_body_entered(body):
 		if collision_probe_array.find(body) == -1:
 			collision_probe_hit = true
 			collision_probe_array.insert(collision_probe_array.size(), body)
-			print("Collision Probe Hit: " + str(collision_probe_hit) + " | Added " + str(body) + " at index [" + str(collision_probe_array.size()-1) + "]")
+			# print("Collision Probe Hit: " + str(collision_probe_hit) + " | Added " + str(body) + " at index [" + str(collision_probe_array.size()-1) + "]")
 
 # this tells us when the camera has stopped clipping against walls
 func _on_CanClipDetector_body_exited(body):
@@ -367,11 +376,11 @@ func _on_CanClipDetector_body_exited(body):
 			var body_to_remove = collision_probe_array.find(body)
 			if body_to_remove != -1:
 				collision_probe_array.remove(body_to_remove)
-				print("Removed " + str(body) + " from index [" + str(collision_probe_array.size()) + "]")
+				# print("Removed " + str(body) + " from index [" + str(collision_probe_array.size()) + "]")
 		
-		if collision_probe_array.empty() and !is_clipping:
+		if collision_probe_array.empty():
 			collision_probe_hit = false
-			print("CollisionProbeHit: " + str(collision_probe_hit))
+			# print("CollisionProbeHit: " + str(collision_probe_hit))
 			
 # when the zoomtimer times out, reset it
 func _on_ZoomTimer_timeout():
