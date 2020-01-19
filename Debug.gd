@@ -1,11 +1,14 @@
 extends Panel
 
 export (NodePath) var Player
+export (NodePath) var ViewCam
 
 var player
+var view_cam
 
 func _ready():
 	player = get_node(Player)
+	view_cam = get_node(ViewCam)
 	
 	# ensure that we are hiding the debug panel
 	$Debug.hide()
@@ -21,7 +24,7 @@ func _process(delta):
 		var yRot = " Y:" + str(player.rotation_degrees.y)
 		var zRot = " Z:" + str(player.rotation_degrees.z)
 		
-		$Debug/Velocity.text = "Velocity: " + str(player.new_velocity)
+		$Debug/Velocity.text = "Velocity: " + str(player.new_velocity) + " : Length = " + str(player.new_velocity.length())
 		$Debug/Acceleration.text = "Acceleration: " + str(player.accel)
 		$Debug/Deceleration.text = "Deceleration: " + str(player.DecelerationForce)
 		
@@ -35,6 +38,8 @@ func _process(delta):
 		
 		$Debug/WorldName.text = "World Name: " + str(get_parent().name)
 		$Debug/Objects.text = "Objects In World: " + str(get_parent().get_child_count() - 1)
+		
+		$Debug/ViewCam.text = "Viewcam Distance: " +str(view_cam.transform.origin.z)
 
 
 func _on_ShowInfo_pressed():

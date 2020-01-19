@@ -14,28 +14,31 @@ export (NodePath) var ClipCamera
 # so that we don't clip to ourselves!
 export (NodePath) var ClipCameraException
 
-# export our lerpweight for the camera
-export (float) var LerpWeight = 0.03
+# export our CameraSmoothing for the camera
+export (float) var CameraSmoothing = 0.03
 
 # export our rotational speed
 export (float) var RotationSpeed = 1.75
 
 # export our collision probe size
-export (float) var CollisionProbeSize = 1
+export (float) var CollisionRadius = 2
 
 # export our max and min camera angles
 export (float) var MaxCameraAngle = 70
 export (float) var MinCameraAngle = -45
 
+# export our minimum camera distance
+export (float) var MinViewCamDistance = 1.0
+
 # export our clip offset multiplier
 export (float) var ClipOffsetMultiplier = 1.075
 
 # export our view cam distance modifier
-export (float) var ViewCamDistanceModifier = 1.05
+export (float) var ViewCamDistanceMultiplier = 1.05
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = false
-export (float) var FollowDelayWeight = 0.07
+export (float) var FollowSmoothing = 0.07
 
 # allow the user to choose to allow mouse input if gamepad is not being used
 export (bool) var EnableMouseInput = false
@@ -46,6 +49,8 @@ export (float) var ZoomDelay = 0.5
 
 # this lets us set the minimum distance that the raycast for detecting Confined Spaces will work
 export (float) var MinConfinedSpaceDistance = 2.0
+
+export (float) var MaxConfinedSpaceDistance = 8.0
 
 # our local variables
 var cam_up = 0.0
@@ -59,12 +64,11 @@ var can_clip = false
 var y_gimbal
 var x_gimbal
 var max_zoom_level
-var zoom_level_array = []
+var zooms = []
 var gimbal_offset
-var is_in_confined_space = false
-var collision_probe_hit = false
+var confined_space = false
 var collision_probe_shape
-var is_clipping = false
+var clipping = false
 var counting_down = false
 var player
 var raycast_offset 
@@ -81,14 +85,14 @@ var mouse_captured = false
 var mouse_moved = false
 
 # we use this array to determine if there are more than one bodies in the CollisionProbe.
-var collision_probe_array = []
+var probe = []
 
 var new_lerp_weight
 var distance = 0.0
 var new_distance = 0.0
 var clip_offset = 0.0
-var new_clip = 0.0
-var old_clip = 0.0
+
+var view_cam_z = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -120,28 +124,31 @@ func _ready():
 	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
 	
 	# find the zoom markers under the "ZoomMarkers" node, and store their origin.z component
-	# in our zoom_level_array as our Zoom Levels
+	# in our zooms as our Zoom Levels
 	var zoom_marker = $"X Gimbal/ClipCameraTarget/ZoomMarkers"
 	var zoom_marker_count = zoom_marker.get_child_count()
 	for z in zoom_marker_count:
-		zoom_level_array.insert(z, zoom_marker.get_child(z).transform.origin.z)
-		print("Added zoom value " + str(zoom_level_array[z]) + " to the zoom array")
+		zooms.insert(z, zoom_marker.get_child(z).transform.origin.z)
+		print("Added zoom value " + str(zooms[z]) + " to the zoom array")
 		
 	# ensure we set the max zoom level for the zoom array
 	max_zoom_level = zoom_marker_count
 	print("Max Zoom Level set to " + str(max_zoom_level))
 	
 	# set the default zoom level of the cameras
-	clip_cam.transform.origin.z = zoom_level_array[0]
-	view_cam.transform.origin.z -= ViewCamDistanceModifier
+	clip_cam.transform.origin.z = zooms[0]
+	view_cam.transform.origin.z -= ViewCamDistanceMultiplier
+	
+	# set the viewcam z
+	view_cam_z = view_cam.transform.origin.z
 
 	# add the ClipCameraException node
 	clip_cam.add_exception(get_node(ClipCameraException))
 	print("Added " + str(get_node(ClipCameraException).name) + " to " + str(get_node(ClipCamera).name) + " as collision exception")
 	
 	# set the size of our collision probe
-	collision_probe_shape.shape.radius = CollisionProbeSize
-	print("Set CollisionProbeSize to: " + str(collision_probe_shape.shape.radius))
+	collision_probe_shape.shape.radius = CollisionRadius
+	print("Set CollisionRadius to: " + str(collision_probe_shape.shape.radius))
 	
 	# capture the mouse if we have enabled mouse input
 	if EnableMouseInput:
@@ -150,8 +157,8 @@ func _ready():
 		
 	$ZoomTimer.wait_time = ZoomDelay
 	
-	new_lerp_weight = LerpWeight
-	distance = zoom_level_array[0]
+	new_lerp_weight = CameraSmoothing
+	distance = zooms[0]
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
@@ -181,7 +188,7 @@ func _get_input():
 		stickInput = GameFunctions.apply_deadzone(stickInput, GameManager.StickDeadzone)
 		
 		# zoom the camera
-		if Input.is_action_just_pressed("zoom"):
+		if Input.is_action_just_pressed("zoom") and !can_clip:
 			_zoom_camera(1)
 				
 	# uncapture or recapture the mouse
@@ -217,12 +224,13 @@ func _position_camera():
 	if EnableFollowDelay:
 		self.global_transform.origin = lerp(self.global_transform.origin, 
 		player.global_transform.origin + gimbal_offset, 
-		FollowDelayWeight)
+		FollowSmoothing)
 	else:
 		self.global_transform.origin = player.global_transform.origin + gimbal_offset
 	
 	# position the clip cam
-	clip_cam.transform.origin.z = zoom_level_array[zoom]
+	clip_cam.transform.origin.z = zooms[zoom]
+
 	
 func _rotate_camera(delta):
 	# clamp the x rotation
@@ -244,43 +252,57 @@ func _rotate_camera(delta):
 
 # check for occluding objects
 func _check_for_occlusion():
-
+	
 	# store the clip cam offset
 	clip_offset = clip_cam.get_clip_offset()
 	
 	# determine if the clip camera is clipping
 	if clip_offset > 0:
-		is_clipping = true
+		clipping = true
 	else:
-		is_clipping = false
+		clipping = false
+	
+	# shorthand to determine if the probe array is empty
+	var empty = probe.empty()
 
 	# check if the CollisionProbe is hitting anything
-	if !collision_probe_array.empty():
+	if !empty or confined_space and clipping:
 		can_clip = true
 	else:
 		can_clip = false
-
+		
 	if can_clip:
 		
-		# position the camera
-		new_distance = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		# set the new distance
+		new_distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
 		
-		if new_distance < view_cam.transform.origin.z:
-			view_cam.transform.origin.z = new_distance
+		# check the new distance. If it is less than the current distance, immediately clip to the new distance
+		if new_distance < view_cam_z:
+			view_cam_z = new_distance
 	else:
-		new_distance = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		# set the new distance
+		new_distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
+		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
-		# not registering yet
-		if is_clipping and new_distance >= view_cam.transform.origin.z:
-			distance = zoom_level_array[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		# not registering yet but we know it will
+		if clipping and new_distance >= view_cam_z:
+			
+			# set distance with clip offset in mind
+			distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
 		else:
 			# no collision at all, so set the camera to the correct distance
-			distance = zoom_level_array[zoom] - ViewCamDistanceModifier
+			distance = zooms[zoom] - ViewCamDistanceMultiplier
+			
+	# ensure the camera doesn't go past its distance minimum
+	if view_cam_z <= MinViewCamDistance:
+		view_cam_z = MinViewCamDistance
 		
 	# position the camera to the currently defined distance
-	view_cam.transform.origin.z = lerp(view_cam.transform.origin.z, 
-	distance, 
-	LerpWeight)
+	view_cam_z = lerp(view_cam_z, distance, CameraSmoothing)
+	
+	# set the camera
+	view_cam.transform.origin.z = view_cam_z
+	
 
 # check for confined spaces
 func _confined_space_check():
@@ -289,13 +311,13 @@ func _confined_space_check():
 		# calculate the distance and make sure it isn't below the min distance
 		var collider = $ConfinedSpaceCheck.get_collision_point()
 		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
-		if distance.length() >= MinConfinedSpaceDistance:
-			if !is_in_confined_space:
-				is_in_confined_space = true
+		if distance.length() >= MinConfinedSpaceDistance and distance.length() <= MaxConfinedSpaceDistance:
+			confined_space = true
+		else:
+			confined_space = false
 	else: # we are not colliding so set it to false
-		if is_in_confined_space:
-			is_in_confined_space = false
-			
+		confined_space = false
+		
 	# position the raycast
 	$ConfinedSpaceCheck.global_transform.origin = player.global_transform.origin + raycast_offset
 	
@@ -364,21 +386,21 @@ func _on_CanClipDetector_body_entered(body):
 		
 		# check to make sure this body doesn't exist in the array.
 		# if it doesn't, we will add it to the array, and set collision_probe_hit to true!
-		if collision_probe_array.find(body) == -1:
-			collision_probe_array.insert(collision_probe_array.size(), body)
-			print("Added " + str(body) + " at index [" + str(collision_probe_array.size()-1) + "]")
+		if probe.find(body) == -1:
+			probe.insert(probe.size(), body)
+			#print("Added " + str(body) + " at index [" + str(probe.size()-1) + "]")
 
 # this tells us when the camera has stopped clipping against walls
 func _on_CanClipDetector_body_exited(body):
 	if !body.is_in_group("noclip"):
 		
 		# check array to make sure it is not empty
-		if collision_probe_array.size() != -1:
+		if probe.size() != -1:
 			# search for the body and remove it
-			var body_to_remove = collision_probe_array.find(body)
+			var body_to_remove = probe.find(body)
 			if body_to_remove != -1:
-				collision_probe_array.remove(body_to_remove)
-				print("Removed " + str(body) + " from index [" + str(collision_probe_array.size()) + "]")
+				probe.remove(body_to_remove)
+				#print("Removed " + str(body) + " from index [" + str(probe.size()) + "]")
 			
 # when the zoomtimer times out, reset it
 func _on_ZoomTimer_timeout():
