@@ -43,7 +43,7 @@ ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -8.99999, 10, -3 )
+transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -74, 2.1498, -1.33514e-05 )
 input_capture_on_drag = true
 Downforce = -5.0
 DecelerationForce = 0.005
@@ -51,21 +51,20 @@ AccelerationRate = 1.02
 EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
-[node name="Camera" type="Camera" parent="TestPlayer"]
-transform = Transform( -4.37114e-08, 0.258819, -0.965926, 0, 0.965926, 0.258819, 1, 1.13133e-08, -4.2222e-08, -19.3664, 5.81294, 5.34058e-05 )
-current = true
-
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -9.18591, 11.6391, -2.75 )
+transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -74.1859, 3.7889, 0.250013 )
 ClipCameraException = NodePath("../TestPlayer")
 ClipOffsetMultiplier = 1.0
+ViewCamDistanceModifier = 1.5
 EnableFollowDelay = true
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
 
+[node name="DebugHelper" parent="ECC_ThirdPerson/X Gimbal/ViewCamera/CanClipDetector/CollisionShape" index="0"]
+visible = false
+
 [node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185797, 0.360407, 0.250057 )
-cast_to = Vector3( 0, 15, 0 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )
@@ -81,8 +80,6 @@ shape = SubResource( 4 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
-light_energy = 0.01
-light_indirect_energy = 0.1
 shadow_enabled = true
 
 [node name="Ceiling" type="MeshInstance" parent="."]
@@ -254,20 +251,7 @@ __meta__ = {
 [node name="CollisionShape" type="CollisionShape" parent="Ceiling6/Ceiling"]
 shape = SubResource( 6 )
 
-[node name="Ceiling11" type="MeshInstance" parent="."]
-transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling11"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling11/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling5" type="MeshInstance" parent="."]
+[node name="ThinWall" type="MeshInstance" parent="."]
 transform = Transform( -4.37114e-07, -0.5, 0, 10, -2.18557e-08, 0, 0, 0, 10, -12.5, 10, -10 )
 mesh = SubResource( 5 )
 material/0 = null
@@ -275,22 +259,10 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling5"]
+[node name="Ceiling" type="StaticBody" parent="ThinWall"]
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling5/Ceiling"]
+[node name="CollisionShape" type="CollisionShape" parent="ThinWall/Ceiling"]
 shape = SubResource( 6 )
-
-[node name="Cylinder" type="MeshInstance" parent="."]
-transform = Transform( 2, 0, 0, 0, 4, 0, 0, 0, 2, 0, 4, 16 )
-visible = false
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Cylinder"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder/Cylinder"]
-shape = SubResource( 8 )
-disabled = true
 
 [node name="Cylinder2" type="MeshInstance" parent="."]
 transform = Transform( 0.5, 0, 0, 0, 4, 0, 0, 0, 0.5, -5, 4, 9 )
@@ -313,13 +285,63 @@ material/0 = null
 shape = SubResource( 9 )
 
 [node name="Cylinder3" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 9, 4, 9 )
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 27.7207 )
 mesh = SubResource( 7 )
 material/0 = null
 
 [node name="Cylinder" type="StaticBody" parent="Cylinder3"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Cylinder3/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder5" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 20.7207 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder5/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder6" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 12.7207 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder6/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder7" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 12.7207 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder7"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder7/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder8" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 19.7207 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder8"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder8/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder9" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 26.7207 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Cylinder9"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Cylinder9/Cylinder"]
 shape = SubResource( 8 )
 
 [node name="OmniLight" type="OmniLight" parent="."]
@@ -336,7 +358,6 @@ omni_range = 7.9
 
 [node name="RotatingPlatform" parent="." instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 3, -66 )
-RotatePlatform = false
 
 [node name="RotatingPlatform4" parent="." instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -66 )
@@ -401,6 +422,267 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 3.51218, -32 )
 
 [node name="Pole3" parent="." instance=ExtResource( 11 )]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -29, 7.51218, -30 )
+
+[node name="Spatial" type="Spatial" parent="."]
+transform = Transform( 0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11, 0, 48 )
+
+[node name="Ceiling11" type="MeshInstance" parent="Spatial"]
+transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Spatial/Ceiling11"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/Ceiling11/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="Cylinder" type="MeshInstance" parent="Spatial"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder5" type="MeshInstance" parent="Spatial"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder5/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder6" type="MeshInstance" parent="Spatial"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder6/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Spatial2" type="Spatial" parent="."]
+transform = Transform( -0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -21, 0, 57 )
+
+[node name="Ceiling11" type="MeshInstance" parent="Spatial2"]
+transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Spatial2/Ceiling11"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Ceiling11/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="Cylinder" type="MeshInstance" parent="Spatial2"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder5" type="MeshInstance" parent="Spatial2"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder5/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder6" type="MeshInstance" parent="Spatial2"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder6/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Spatial3" type="Spatial" parent="."]
+transform = Transform( -0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 15, 0, 51 )
+
+[node name="Ceiling11" type="MeshInstance" parent="Spatial3"]
+transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Spatial3/Ceiling11"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Ceiling11/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="Cylinder" type="MeshInstance" parent="Spatial3"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder2" type="MeshInstance" parent="Spatial3"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 47.3308, 4, 57.2292 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder2/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder5" type="MeshInstance" parent="Spatial3"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder5/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Cylinder6" type="MeshInstance" parent="Spatial3"]
+transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder6"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder6/Cylinder"]
+shape = SubResource( 8 )
+
+[node name="Low" type="Spatial" parent="."]
+
+[node name="ThinWall2" type="MeshInstance" parent="Low"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 41.587 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low/ThinWall2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall2/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="ThinWall3" type="MeshInstance" parent="Low"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 50.9741 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low/ThinWall3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall3/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="ThinWall5" type="MeshInstance" parent="Low"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 60.413 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low/ThinWall5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall5/Ceiling"]
+transform = Transform( 1, 2.22045e-16, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 6 )
+
+[node name="ThinWall4" type="MeshInstance" parent="Low"]
+transform = Transform( -4.37114e-07, 3.10588e-22, 10, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, -33.4613, 8, 51.0387 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low/ThinWall4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall4/Ceiling"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 6 )
+
+[node name="Low2" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -24, -2, 0 )
+
+[node name="ThinWall2" type="MeshInstance" parent="Low2"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 41.587 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall2/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="ThinWall3" type="MeshInstance" parent="Low2"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 50.9741 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall3"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall3/Ceiling"]
+shape = SubResource( 6 )
+
+[node name="ThinWall5" type="MeshInstance" parent="Low2"]
+transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 60.413 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall5"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall5/Ceiling"]
+transform = Transform( 1, 2.22045e-16, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 6 )
+
+[node name="ThinWall4" type="MeshInstance" parent="Low2"]
+transform = Transform( -4.37114e-07, 3.10588e-22, 10, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, -33.4613, 8, 51.0387 )
+mesh = SubResource( 5 )
+material/0 = null
+__meta__ = {
+"_editor_description_": ""
+}
+
+[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall4/Ceiling"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 6 )
 
 [editable path="ECC_ThirdPerson"]
 

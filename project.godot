@@ -28,6 +28,7 @@ GameFunctions="*res://GlobalGameFunctions.gd"
 
 window/size/width=1920
 window/size/height=1080
+window/size/resizable=false
 
 [input]
 
@@ -120,5 +121,4 @@ jump={
 
 quality/shadows/filter_mode=2
 quality/filters/use_nearest_mipmap_filter=true
-environment/default_clear_color=Color( 0, 0, 0, 1 )
-environment/default_environment="res://default_env.tres"
+environment/default_environment="res://default_env_new.tres"

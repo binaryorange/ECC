@@ -34,7 +34,7 @@ export (float) var MinViewCamDistance = 1.0
 export (float) var ClipOffsetMultiplier = 1.075
 
 # export our view cam distance modifier
-export (float) var ViewCamDistanceMultiplier = 1.05
+export (float) var ViewCamDistanceModifier = 1.05
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = false
@@ -137,7 +137,7 @@ func _ready():
 	
 	# set the default zoom level of the cameras
 	clip_cam.transform.origin.z = zooms[0]
-	view_cam.transform.origin.z -= ViewCamDistanceMultiplier
+	view_cam.transform.origin.z -= ViewCamDistanceModifier
 	
 	# set the viewcam z
 	view_cam_z = view_cam.transform.origin.z
@@ -264,9 +264,12 @@ func _check_for_occlusion():
 	
 	# shorthand to determine if the probe array is empty
 	var empty = probe.empty()
+	
+	# shorthand for player's stick input length
+	var player_input = player.stickInput.length()
 
 	# check if the CollisionProbe is hitting anything
-	if !empty or confined_space and clipping:
+	if !empty and clipping or confined_space and clipping:
 		can_clip = true
 	else:
 		can_clip = false
@@ -274,24 +277,28 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
 			view_cam_z = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
 		if clipping and new_distance >= view_cam_z:
 			
 			# set distance with clip offset in mind
-			distance = zooms[zoom] - ViewCamDistanceMultiplier - clip_offset * ClipOffsetMultiplier
+			distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		elif clipping and stickInput.length() == 0 and player_input == 0:
+			# we are not rotating the camera or moving the player, and we're still clipping to something,
+			# so show the player by snapping the camera forward again
+			view_cam_z = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
 		else:
 			# no collision at all, so set the camera to the correct distance
-			distance = zooms[zoom] - ViewCamDistanceMultiplier
+			distance = zooms[zoom] - ViewCamDistanceModifier
 			
 	# ensure the camera doesn't go past its distance minimum
 	if view_cam_z <= MinViewCamDistance:
@@ -309,8 +316,8 @@ func _confined_space_check():
 	# check if we are colliding against geometry above the player
 	if $ConfinedSpaceCheck.is_colliding():
 		# calculate the distance and make sure it isn't below the min distance
-		var collider = $ConfinedSpaceCheck.get_collision_point()
-		var distance = $ConfinedSpaceCheck.global_transform.origin - collider
+		var collision_point = $ConfinedSpaceCheck.get_collision_point()
+		var distance = $ConfinedSpaceCheck.global_transform.origin - collision_point
 		if distance.length() >= MinConfinedSpaceDistance and distance.length() <= MaxConfinedSpaceDistance:
 			confined_space = true
 		else:

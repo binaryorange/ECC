@@ -5,6 +5,7 @@
 [resource]
 background_mode = 2
 background_sky = SubResource( 1 )
+background_sky_custom_fov = 180.0
 ambient_light_color = Color( 1, 1, 1, 1 )
 fog_depth_curve = 0.812253
 fog_transmit_enabled = true
