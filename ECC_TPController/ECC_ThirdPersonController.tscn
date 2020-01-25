@@ -8,6 +8,7 @@ radial_segments = 8
 rings = 8
 
 [sub_resource type="SphereShape" id=2]
+radius = 2.0
 
 [sub_resource type="SphereMesh" id=3]
 
@@ -78,6 +79,7 @@ input_ray_pickable = false
 shape = SubResource( 2 )
 
 [node name="DebugHelper" type="MeshInstance" parent="X Gimbal/ViewCamera/CanClipDetector/CollisionShape"]
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0 )
 mesh = SubResource( 3 )
 material/0 = SubResource( 4 )
 
@@ -89,11 +91,9 @@ material/0 = SubResource( 4 )
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6 )
-doppler_tracking = 1
+doppler_tracking = 2
 fov = 60.0
-near = 0.01
 margin = 0.1
-process_mode = 1
 
 [node name="ZoomMarkers" type="Spatial" parent="X Gimbal/ClipCameraTarget"]
 

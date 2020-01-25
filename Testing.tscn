@@ -54,6 +54,7 @@ FollowCamera = NodePath("../ECC_ThirdPerson")
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
 transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -74.1859, 3.7889, 0.250013 )
 ClipCameraException = NodePath("../TestPlayer")
+CollisionRadius = 3.0
 ClipOffsetMultiplier = 1.0
 ViewCamDistanceModifier = 1.5
 EnableFollowDelay = true
@@ -62,6 +63,9 @@ MinConfinedSpaceDistance = 0.5
 
 [node name="DebugHelper" parent="ECC_ThirdPerson/X Gimbal/ViewCamera/CanClipDetector/CollisionShape" index="0"]
 visible = false
+
+[node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
+near = 0.01
 
 [node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185797, 0.360407, 0.250057 )
@@ -624,7 +628,6 @@ __meta__ = {
 [node name="Ceiling" type="StaticBody" parent="Low/ThinWall4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall4/Ceiling"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 6 )
 
 [node name="Low2" type="Spatial" parent="."]
@@ -681,7 +684,6 @@ __meta__ = {
 [node name="Ceiling" type="StaticBody" parent="Low2/ThinWall4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall4/Ceiling"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 6 )
 
 [editable path="ECC_ThirdPerson"]

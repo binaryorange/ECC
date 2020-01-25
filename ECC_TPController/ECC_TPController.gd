@@ -91,6 +91,7 @@ var new_lerp_weight
 var distance = 0.0
 var new_distance = 0.0
 var clip_offset = 0.0
+var new_clip = -1
 
 var view_cam_z = 0
 
@@ -202,15 +203,14 @@ func _get_input():
 
 # update the camera's position and rotation
 func _update_camera(delta):
+	# now check for occluding geometry
+	_check_for_occlusion()
 	
 	# update the camera's position
 	_position_camera()
 	
 	# now update the camera's rotation
 	_rotate_camera(delta)
-	
-	# now check for occluding geometry
-	_check_for_occlusion()
 	
 	# now check for any confined spaces
 	_confined_space_check()
@@ -277,25 +277,25 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
 			view_cam_z = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
 		if clipping and new_distance >= view_cam_z:
 			
 			# set distance with clip offset in mind
-			distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+			distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
 		elif clipping and stickInput.length() == 0 and player_input == 0:
 			# we are not rotating the camera or moving the player, and we're still clipping to something,
 			# so show the player by snapping the camera forward again
-			view_cam_z = zooms[zoom] - ViewCamDistanceModifier - clip_offset * ClipOffsetMultiplier
+			view_cam_z = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
 		else:
 			# no collision at all, so set the camera to the correct distance
 			distance = zooms[zoom] - ViewCamDistanceModifier
