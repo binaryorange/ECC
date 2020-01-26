@@ -30,11 +30,14 @@ export (float) var MinCameraAngle = -45
 # export our minimum camera distance
 export (float) var MinViewCamDistance = 1.0
 
-# export our clip offset multiplier
-export (float) var ClipOffsetMultiplier = 1.075
+# export our clip cam z adjuster
+export (float) var ClipCamZAdjuster = 3
 
-# export our view cam distance modifier
-export (float) var ViewCamDistanceModifier = 1.05
+# export our view cam offset adjuster
+export (float) var ViewCamZAdjuster = 1
+
+# export our clip distance adjuster
+export (float) var ClipDistanceAdjuster = 2
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = false
@@ -91,7 +94,6 @@ var new_lerp_weight
 var distance = 0.0
 var new_distance = 0.0
 var clip_offset = 0.0
-var new_clip = -1
 
 var view_cam_z = 0
 
@@ -116,10 +118,10 @@ func _ready():
 	# set raycaster as toplevel
 	$ConfinedSpaceCheck.set_as_toplevel(true)
 	
+	# store the position offset of the raycast node
 	raycast_offset = $ConfinedSpaceCheck.global_transform.origin - player.global_transform.origin
 	
-	# store the position offset of the raycast node
-	
+
 	# store the offset of the gimbal relative to its parent node
 	gimbal_offset = self.transform.origin - player.transform.origin
 	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
@@ -137,8 +139,12 @@ func _ready():
 	print("Max Zoom Level set to " + str(max_zoom_level))
 	
 	# set the default zoom level of the cameras
-	clip_cam.transform.origin.z = zooms[0]
-	view_cam.transform.origin.z -= ViewCamDistanceModifier
+	
+	# set the clip camera to be one unit BEHIND of the zoom marker
+	clip_cam.transform.origin.z = zooms[0] + ClipCamZAdjuster
+	
+	# set the view camera to be one unit AHEAD of the zoom marker
+	view_cam.transform.origin.z = zooms[0] - ViewCamZAdjuster
 	
 	# set the viewcam z
 	view_cam_z = view_cam.transform.origin.z
@@ -159,7 +165,9 @@ func _ready():
 	$ZoomTimer.wait_time = ZoomDelay
 	
 	new_lerp_weight = CameraSmoothing
-	distance = zooms[0]
+	
+	# set the default distance
+	distance = view_cam_z
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
@@ -229,7 +237,7 @@ func _position_camera():
 		self.global_transform.origin = player.global_transform.origin + gimbal_offset
 	
 	# position the clip cam
-	clip_cam.transform.origin.z = zooms[zoom]
+	clip_cam.transform.origin.z = zooms[zoom] + ClipCamZAdjuster
 
 	
 func _rotate_camera(delta):
@@ -277,28 +285,29 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamZAdjuster - clip_offset - ClipDistanceAdjuster
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
 			view_cam_z = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
+		new_distance = zooms[zoom] - ViewCamZAdjuster - clip_offset - ClipDistanceAdjuster
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
 		if clipping and new_distance >= view_cam_z:
 			
 			# set distance with clip offset in mind
-			distance = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
+			distance = new_distance
+			
 		elif clipping and stickInput.length() == 0 and player_input == 0:
 			# we are not rotating the camera or moving the player, and we're still clipping to something,
 			# so show the player by snapping the camera forward again
-			view_cam_z = zooms[zoom] - ViewCamDistanceModifier - clip_offset + new_clip * ClipOffsetMultiplier
+			view_cam_z = zooms[zoom] - ViewCamZAdjuster - clip_offset - ClipDistanceAdjuster
 		else:
 			# no collision at all, so set the camera to the correct distance
-			distance = zooms[zoom] - ViewCamDistanceModifier
+			distance = zooms[zoom] - ViewCamZAdjuster
 			
 	# ensure the camera doesn't go past its distance minimum
 	if view_cam_z <= MinViewCamDistance:
@@ -309,7 +318,6 @@ func _check_for_occlusion():
 	
 	# set the camera
 	view_cam.transform.origin.z = view_cam_z
-	
 
 # check for confined spaces
 func _confined_space_check():
@@ -386,6 +394,8 @@ func _zoom_camera(var amount):
 				zoom = 0
 			else:
 				zoom += amount
+				
+	print(clip_cam.transform.origin.z)
 
 # this tells us when the camera can clip against walls or other occluding objects
 func _on_CanClipDetector_body_entered(body):

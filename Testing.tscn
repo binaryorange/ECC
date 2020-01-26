@@ -51,18 +51,22 @@ AccelerationRate = 1.02
 EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
+[node name="Camera" type="Camera" parent="TestPlayer"]
+transform = Transform( -1.62921e-07, 0.173648, -0.984808, 0, 0.984808, 0.173648, 1, 2.82909e-08, -1.60446e-07, -20.787, 5, 0 )
+
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
 transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -74.1859, 3.7889, 0.250013 )
 ClipCameraException = NodePath("../TestPlayer")
 CollisionRadius = 3.0
-ClipOffsetMultiplier = 1.0
-ViewCamDistanceModifier = 1.5
+MaxCameraAngle = 45.0
+MinCameraAngle = -50.0
+MinViewCamDistance = 0.5
+ClipCamZAdjuster = 1.0
+ViewCamZAdjuster = 1.0
+ClipDistanceAdjuster = 0.0
 EnableFollowDelay = true
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
-
-[node name="DebugHelper" parent="ECC_ThirdPerson/X Gimbal/ViewCamera/CanClipDetector/CollisionShape" index="0"]
-visible = false
 
 [node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
 near = 0.01
@@ -618,7 +622,7 @@ transform = Transform( 1, 2.22045e-16, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 6 )
 
 [node name="ThinWall4" type="MeshInstance" parent="Low"]
-transform = Transform( -4.37114e-07, 3.10588e-22, 10, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, -33.4613, 8, 51.0387 )
+transform = Transform( -2.26082e-06, 1.60641e-21, 51.7216, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, 4.09091, 8, 51.0387 )
 mesh = SubResource( 5 )
 material/0 = null
 __meta__ = {
@@ -685,6 +689,8 @@ __meta__ = {
 
 [node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall4/Ceiling"]
 shape = SubResource( 6 )
+
+[editable path="TestPlayer"]
 
 [editable path="ECC_ThirdPerson"]
 
