@@ -54,7 +54,7 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 [node name="ViewCamera" type="Camera" parent="X Gimbal" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
 current = true
 near = 0.01
 far = 500.0
@@ -99,17 +99,17 @@ margin = 0.1
 [node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
 
 [node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8 )
 
 [node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 15 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12 )
 
 [node name="ZoomTimer" type="Timer" parent="." groups=[
 "noclip",

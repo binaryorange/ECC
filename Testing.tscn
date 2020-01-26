@@ -37,6 +37,7 @@ material = ExtResource( 2 )
 [node name="Testing" type="Spatial"]
 
 [node name="Debug" parent="." instance=ExtResource( 10 )]
+visible = false
 Player = NodePath("../TestPlayer")
 ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 
@@ -51,20 +52,9 @@ AccelerationRate = 1.02
 EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
-[node name="Camera" type="Camera" parent="TestPlayer"]
-transform = Transform( -1.62921e-07, 0.173648, -0.984808, 0, 0.984808, 0.173648, 1, 2.82909e-08, -1.60446e-07, -20.787, 5, 0 )
-
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
 transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -74.1859, 3.7889, 0.250013 )
 ClipCameraException = NodePath("../TestPlayer")
-CollisionRadius = 3.0
-MaxCameraAngle = 45.0
-MinCameraAngle = -50.0
-MinViewCamDistance = 0.5
-ClipCamZAdjuster = 1.0
-ViewCamZAdjuster = 1.0
-ClipDistanceAdjuster = 0.0
-EnableFollowDelay = true
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
 
