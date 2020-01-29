@@ -30,10 +30,12 @@ export (float) var MinCameraAngle = -50
 export (float) var MinViewCamDistance = 0.5
 
 # export our clip cam z adjuster
-export (float) var ClipCamOffset = 2
+export (float) var ClipCamOffset = 3
 
 # export our view cam offset adjuster
-export (float) var ViewCamOffset = 1
+export (float) var ViewCamOffset = 0
+
+export (float) var ClipModifier = 1.01
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = true
@@ -287,7 +289,7 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamOffset - clip_offset
+		new_distance = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
@@ -298,7 +300,7 @@ func _check_for_occlusion():
 			distance = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamOffset - clip_offset
+		new_distance = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
@@ -310,7 +312,7 @@ func _check_for_occlusion():
 		elif clipping and stickInput.length() == 0 and player_input == 0:
 			# we are not rotating the camera or moving the player, and we're still clipping to something,
 			# so show the player by snapping the camera forward again
-			view_cam_z = zooms[zoom] - ViewCamOffset - clip_offset
+			view_cam_z = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
 		else:
 			# no collision at all, so set the camera to the correct distance
 			distance = zooms[zoom] - ViewCamOffset

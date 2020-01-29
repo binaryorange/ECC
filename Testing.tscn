@@ -1,50 +1,35 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://TestPlayer.tscn" type="PackedScene" id=1]
-[ext_resource path="res://lightblue.tres" type="Material" id=2]
-[ext_resource path="res://lightred.tres" type="Material" id=3]
-[ext_resource path="res://shiny.tres" type="Material" id=4]
+[ext_resource path="res://WallWithPillars5W3H.tscn" type="PackedScene" id=2]
+[ext_resource path="res://BlankWall5W3H.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Ceiling10x10.tscn" type="PackedScene" id=4]
 [ext_resource path="res://ECC_TPController/ECC_ThirdPersonController.tscn" type="PackedScene" id=5]
-[ext_resource path="res://MovingPlatform.tscn" type="PackedScene" id=6]
-[ext_resource path="res://RotatingPlatform.tscn" type="PackedScene" id=7]
-[ext_resource path="res://BouncyBally.tscn" type="PackedScene" id=8]
-[ext_resource path="res://IcyPlatform.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Sphere.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Debug.tscn" type="PackedScene" id=10]
-[ext_resource path="res://Pole.tscn" type="PackedScene" id=11]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0.219608, 1, 0, 1 )
 
 [sub_resource type="CubeMesh" id=2]
 
-[sub_resource type="PhysicsMaterial" id=3]
+[sub_resource type="SpatialMaterial" id=3]
+
+[sub_resource type="PhysicsMaterial" id=4]
 friction = 0.01
 
-[sub_resource type="BoxShape" id=4]
-
-[sub_resource type="CubeMesh" id=5]
-material = ExtResource( 4 )
-
-[sub_resource type="BoxShape" id=6]
-
-[sub_resource type="CylinderMesh" id=7]
-material = ExtResource( 2 )
-
-[sub_resource type="CylinderShape" id=8]
-
-[sub_resource type="CylinderShape" id=9]
+[sub_resource type="BoxShape" id=5]
 
 [node name="Testing" type="Spatial"]
 
 [node name="Debug" parent="." instance=ExtResource( 10 )]
-visible = false
 Player = NodePath("../TestPlayer")
 ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( -1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, -74, 2.1498, -1.33514e-05 )
+transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -54.218, 2.1498, 51.032 )
 input_capture_on_drag = true
 Downforce = -5.0
 DecelerationForce = 0.005
@@ -53,643 +38,204 @@ EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, -74.1859, 3.7889, 0.250013 )
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -53.968, 4.4, 51.218 )
 ClipCameraException = NodePath("../TestPlayer")
+MaxCameraAngle = 35.0
+MinCameraAngle = -70.0
+ClipCamOffset = 2.0
+ViewCamOffset = 1.0
+ClipModifier = 1.0
+FollowSmoothing = 0.09
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
+MaxConfinedSpaceDistance = 9.0
 
 [node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
 near = 0.01
 
 [node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185797, 0.360407, 0.250057 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185799, -0.260498, 0.250057 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )
 material_override = SubResource( 1 )
 mesh = SubResource( 2 )
-material/0 = null
+material/0 = SubResource( 3 )
 
 [node name="Floor" type="StaticBody" parent="Floor"]
-physics_material_override = SubResource( 3 )
+physics_material_override = SubResource( 4 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Floor/Floor"]
-shape = SubResource( 4 )
+shape = SubResource( 5 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
 shadow_enabled = true
 
-[node name="Ceiling" type="MeshInstance" parent="."]
-transform = Transform( 10, 0, 0, 0, 0.0866025, 5, 0, -0.05, 8.66025, -2, 4.5359, -8 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling15" type="MeshInstance" parent="."]
-transform = Transform( 2, 0, 0, 0, 0.1, 0, 0, 0, 5, -10, 14, -1 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling15"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling15/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling16" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -17, 14, 2 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling16"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling16/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling17" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -27, 17, 2 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling17"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling17/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling18" type="MeshInstance" parent="."]
-transform = Transform( -8.74228e-08, 0, -5, 0, 0.1, 0, 2, 0, -2.18557e-07, -40, 20, 0 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling18"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling18/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling7" type="MeshInstance" parent="."]
-transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, 14, 1, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling7"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling7/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling10" type="MeshInstance" parent="."]
-transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, -19, 1, -46 )
-mesh = SubResource( 5 )
-material/0 = ExtResource( 3 )
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling10"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling10/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Ceiling8" type="MeshInstance" parent="."]
-transform = Transform( 7, 0, 0, 0, 1, 0, 0, 0, 7, 14, 3, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Ceiling8"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling8/Ceiling"]
-shape = SubResource( 6 )
+[node name="Walls" type="Spatial" parent="."]
 
-[node name="Ceiling9" type="MeshInstance" parent="."]
-transform = Transform( 4, 0, 0, 0, 1, 0, 0, 0, 4, 14, 5, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="BlankWall5W3H" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 70 )
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling9"]
+[node name="BlankWall5W3H2" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 64 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling9/Ceiling"]
-shape = SubResource( 6 )
+[node name="BlankWall5W3H6" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 70 )
 
-[node name="Ceiling2" type="MeshInstance" parent="."]
-transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, -23, 12, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="BlankWall5W3H5" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 64 )
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling2"]
+[node name="BlankWall5W3H4" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 82 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling2/Ceiling"]
-shape = SubResource( 6 )
+[node name="BlankWall5W3H3" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 76 )
 
-[node name="Ceiling3" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-07, -1, 0, 10, -4.37114e-08, 0, 0, 0, 10, -34, 10, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="BlankWall5W3H8" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 82 )
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling3"]
+[node name="BlankWall5W3H7" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 76 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling3/Ceiling"]
-shape = SubResource( 6 )
+[node name="PillarWalls" type="Spatial" parent="."]
 
-[node name="Ceiling4" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-07, -1, 0, 10, -4.37114e-08, 0, 0, 0, 10, -23, 10, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="WallWithPillars5W3H" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 41 )
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling4"]
+[node name="WallWithPillars5W3H2" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 41 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling4/Ceiling"]
-shape = SubResource( 6 )
+[node name="WallWithPillars5W3H8" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 41 )
 
-[node name="Ceiling6" type="MeshInstance" parent="."]
-transform = Transform( 1.91069e-14, 4.37114e-08, -10, 10, -4.37114e-08, 0, -4.37114e-07, -1, -4.37114e-07, -23, 10, -1 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="WallWithPillars5W3H7" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 41 )
 
-[node name="Ceiling" type="StaticBody" parent="Ceiling6"]
+[node name="WallWithPillars5W3H12" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 41 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ceiling6/Ceiling"]
-shape = SubResource( 6 )
+[node name="WallWithPillars5W3H11" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 41 )
 
-[node name="ThinWall" type="MeshInstance" parent="."]
-transform = Transform( -4.37114e-07, -0.5, 0, 10, -2.18557e-08, 0, 0, 0, 10, -12.5, 10, -10 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
+[node name="WallWithPillars5W3H4" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 50 )
 
-[node name="Ceiling" type="StaticBody" parent="ThinWall"]
+[node name="WallWithPillars5W3H3" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 50 )
 
-[node name="CollisionShape" type="CollisionShape" parent="ThinWall/Ceiling"]
-shape = SubResource( 6 )
+[node name="WallWithPillars5W3H14" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 50 )
 
-[node name="Cylinder2" type="MeshInstance" parent="."]
-transform = Transform( 0.5, 0, 0, 0, 4, 0, 0, 0, 0.5, -5, 4, 9 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="WallWithPillars5W3H13" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 50 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder2"]
+[node name="WallWithPillars5W3H22" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 50 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder2/Cylinder"]
-shape = SubResource( 8 )
+[node name="WallWithPillars5W3H21" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 50 )
 
-[node name="Cylinder4" type="MeshInstance" parent="."]
-transform = Transform( 0.25, 0, 0, 0, 4, 0, 0, 0, 0.25, -9, 4, 9 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="WallWithPillars5W3H24" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 50 )
 
-[node name="StaticBody" type="StaticBody" parent="Cylinder4"]
+[node name="WallWithPillars5W3H23" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 50 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder4/StaticBody"]
-shape = SubResource( 9 )
+[node name="WallWithPillars5W3H6" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 59 )
 
-[node name="Cylinder3" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 27.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="WallWithPillars5W3H5" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 59 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder3"]
+[node name="WallWithPillars5W3H10" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 59 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder3/Cylinder"]
-shape = SubResource( 8 )
+[node name="WallWithPillars5W3H9" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 59 )
 
-[node name="Cylinder5" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 20.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="WallWithPillars5W3H16" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 59 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder5"]
+[node name="WallWithPillars5W3H15" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 59 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder5/Cylinder"]
-shape = SubResource( 8 )
+[node name="WallWithPillars5W3H18" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 59 )
 
-[node name="Cylinder6" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -71, 4, 12.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="WallWithPillars5W3H17" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 59 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder6"]
+[node name="WallWithPillars5W3H20" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 41 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder6/Cylinder"]
-shape = SubResource( 8 )
+[node name="WallWithPillars5W3H19" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 41 )
 
-[node name="Cylinder7" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 12.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="Ceilings" type="Spatial" parent="."]
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder7"]
+[node name="Ceiling10x10" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 13, 50 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder7/Cylinder"]
-shape = SubResource( 8 )
+[node name="Ceiling10x11" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 13, 50 )
 
-[node name="Cylinder8" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 19.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="Ceiling10x13" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -8, 7, 31 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder8"]
+[node name="Ceiling10x12" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 7, 73 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder8/Cylinder"]
-shape = SubResource( 8 )
+[node name="Lights" type="Spatial" parent="."]
 
-[node name="Cylinder9" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, -56, 4, 26.7207 )
-mesh = SubResource( 7 )
-material/0 = null
+[node name="OmniLight" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 45.5996 )
 
-[node name="Cylinder" type="StaticBody" parent="Cylinder9"]
+[node name="OmniLight2" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 45.5996 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Cylinder9/Cylinder"]
-shape = SubResource( 8 )
+[node name="OmniLight3" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 45.5996 )
 
-[node name="OmniLight" type="OmniLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 4, -5 )
-light_color = Color( 1, 0.541176, 0.00784314, 1 )
-shadow_enabled = true
-omni_range = 7.9
+[node name="OmniLight4" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -19.9985, 9.03218, 45.6 )
 
-[node name="OmniLight2" type="OmniLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26.412, 3.4203, -10.7928 )
-light_color = Color( 1, 0, 0.913725, 1 )
-shadow_enabled = true
-omni_range = 7.9
+[node name="OmniLight8" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 54.5996 )
 
-[node name="RotatingPlatform" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 3, -66 )
+[node name="OmniLight7" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 54.5996 )
 
-[node name="RotatingPlatform4" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -66 )
+[node name="OmniLight6" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 54.5996 )
 
-[node name="RotatingPlatform5" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -41, 3, -86 )
+[node name="OmniLight5" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -19.9985, 9.03218, 54.6 )
 
-[node name="RotatingPlatform2" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 8, -66 )
-RotateSpeed = -0.75
+[node name="Sphere" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0 )
 
-[node name="RotatingPlatform3" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 14, -46 )
+[node name="Sphere5" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 6, 0 )
 
-[node name="MovingPlatform" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 16, -46 )
+[node name="Sphere2" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 6, 9 )
 
-[node name="Destination Marker" parent="MovingPlatform" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 27 )
+[node name="Sphere8" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 6, -9 )
 
-[node name="MovingPlatform5" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 16, -46 )
+[node name="Sphere4" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 6, 9 )
 
-[node name="Destination Marker" parent="MovingPlatform5" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15.672, 0 )
+[node name="Sphere7" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 6, -9 )
 
-[node name="MovingPlatform2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 16, 18 )
+[node name="Sphere3" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, 12 )
 
-[node name="Destination Marker" parent="MovingPlatform2" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -27 )
-
-[node name="MovingPlatform3" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 16, 18 )
-
-[node name="Destination Marker" parent="MovingPlatform3" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0 )
-
-[node name="MovingPlatform4" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 16, 18 )
-
-[node name="Destination Marker" parent="MovingPlatform4" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 0 )
-
-[node name="BouncyBally" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 3, -10 )
-
-[node name="BouncyBally2" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 3, -13 )
-
-[node name="BouncyBally3" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 5, -11 )
-
-[node name="IcyPlatform" parent="." instance=ExtResource( 9 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 0, -30 )
-
-[node name="Pole" parent="." instance=ExtResource( 11 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 3.51218, -28 )
-
-[node name="Pole2" parent="." instance=ExtResource( 11 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -29, 3.51218, -32 )
-
-[node name="Pole3" parent="." instance=ExtResource( 11 )]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -29, 7.51218, -30 )
-
-[node name="Spatial" type="Spatial" parent="."]
-transform = Transform( 0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11, 0, 48 )
-
-[node name="Ceiling11" type="MeshInstance" parent="Spatial"]
-transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Spatial/Ceiling11"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial/Ceiling11/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Cylinder" type="MeshInstance" parent="Spatial"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder5" type="MeshInstance" parent="Spatial"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder5"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder5/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder6" type="MeshInstance" parent="Spatial"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial/Cylinder6"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial/Cylinder6/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Spatial2" type="Spatial" parent="."]
-transform = Transform( -0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -21, 0, 57 )
-
-[node name="Ceiling11" type="MeshInstance" parent="Spatial2"]
-transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Spatial2/Ceiling11"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Ceiling11/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Cylinder" type="MeshInstance" parent="Spatial2"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder5" type="MeshInstance" parent="Spatial2"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder5"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder5/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder6" type="MeshInstance" parent="Spatial2"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial2/Cylinder6"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial2/Cylinder6/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Spatial3" type="Spatial" parent="."]
-transform = Transform( -0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 15, 0, 51 )
-
-[node name="Ceiling11" type="MeshInstance" parent="Spatial3"]
-transform = Transform( -9.23079e-08, -0.711143, -7.03047, 10, -4.37114e-08, 3.10851e-07, -5.28371e-07, -0.703047, 7.11143, -3.20287, -1.24195, 19.1707 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Spatial3/Ceiling11"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Ceiling11/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Cylinder" type="MeshInstance" parent="Spatial3"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 2.74594, 4, 11.1186 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder2" type="MeshInstance" parent="Spatial3"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, 47.3308, 4, 57.2292 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder2"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder2/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder5" type="MeshInstance" parent="Spatial3"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -4.28454, 4, 18.23 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder5"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder5/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Cylinder6" type="MeshInstance" parent="Spatial3"]
-transform = Transform( 1.42229, 0, -1.40609, 0, 4, 0, 1.40609, 0, 1.42229, -11.315, 4, 25.3415 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Cylinder" type="StaticBody" parent="Spatial3/Cylinder6"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Spatial3/Cylinder6/Cylinder"]
-shape = SubResource( 8 )
-
-[node name="Low" type="Spatial" parent="."]
-
-[node name="ThinWall2" type="MeshInstance" parent="Low"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 41.587 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low/ThinWall2"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall2/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="ThinWall3" type="MeshInstance" parent="Low"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 50.9741 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low/ThinWall3"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall3/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="ThinWall5" type="MeshInstance" parent="Low"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 60.413 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low/ThinWall5"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall5/Ceiling"]
-transform = Transform( 1, 2.22045e-16, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-shape = SubResource( 6 )
-
-[node name="ThinWall4" type="MeshInstance" parent="Low"]
-transform = Transform( -2.26082e-06, 1.60641e-21, 51.7216, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, 4.09091, 8, 51.0387 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low/ThinWall4"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low/ThinWall4/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="Low2" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -24, -2, 0 )
-
-[node name="ThinWall2" type="MeshInstance" parent="Low2"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 41.587 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall2"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall2/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="ThinWall3" type="MeshInstance" parent="Low2"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 50.9741 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall3"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall3/Ceiling"]
-shape = SubResource( 6 )
-
-[node name="ThinWall5" type="MeshInstance" parent="Low2"]
-transform = Transform( 1.91069e-14, 2.18557e-08, 10, 10, -2.18557e-08, 0, 4.37114e-07, 0.5, -4.37114e-07, -33.4613, -2, 60.413 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall5"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall5/Ceiling"]
-transform = Transform( 1, 2.22045e-16, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-shape = SubResource( 6 )
-
-[node name="ThinWall4" type="MeshInstance" parent="Low2"]
-transform = Transform( -4.37114e-07, 3.10588e-22, 10, 1.42109e-13, 0.5, 0, -10, 7.10543e-15, -4.37114e-07, -33.4613, 8, 51.0387 )
-mesh = SubResource( 5 )
-material/0 = null
-__meta__ = {
-"_editor_description_": ""
-}
-
-[node name="Ceiling" type="StaticBody" parent="Low2/ThinWall4"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Low2/ThinWall4/Ceiling"]
-shape = SubResource( 6 )
+[node name="Sphere6" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 6, -14 )
 
 [editable path="TestPlayer"]
 
 [editable path="ECC_ThirdPerson"]
-
-[editable path="MovingPlatform"]
-
-[editable path="MovingPlatform5"]
-
-[editable path="MovingPlatform2"]
-
-[editable path="MovingPlatform3"]
-
-[editable path="MovingPlatform4"]

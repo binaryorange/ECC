@@ -82,9 +82,12 @@ func _physics_process(delta):
 		yVelocity = TerminalVelocity/4
 	
 	# reset is_jumping to false while falling
-	if yVelocity < 0:
+	if yVelocity < 0 and !is_on_floor():
 		is_jumping = false
 		is_falling = true
+	elif is_on_floor():
+		is_jumping = false
+		is_falling = false
 	else:
 		is_falling = false
 	
