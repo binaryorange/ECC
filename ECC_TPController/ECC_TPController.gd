@@ -37,6 +37,8 @@ export (float) var ViewCamOffset = 0
 
 export (float) var ClipModifier = 1.01
 
+export (float) var ClipCameraMargin = 0.1
+
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = true
 export (float) var FollowSmoothing = 0.07
@@ -96,6 +98,7 @@ var distance = 0.0
 var new_distance = 0.0
 var clip_offset = 0.0
 var view_cam_z = 0.0
+var new_clip_y_pos = 0.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -172,9 +175,12 @@ func _ready():
 	
 	# set the default distance
 	distance = view_cam_z
+	
+	clip_cam.set_margin(ClipCameraMargin)
+	print("Clip Cam Margin set to: " + str(clip_cam.get_margin()))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta):
+func _process(delta):
 	_get_input()
 	_update_camera(delta)
 
@@ -326,6 +332,7 @@ func _check_for_occlusion():
 	
 	# set the camera
 	view_cam.transform.origin.z = view_cam_z
+
 
 # check for confined spaces
 func _confined_space_check():

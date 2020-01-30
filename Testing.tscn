@@ -29,7 +29,7 @@ ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -54.218, 2.1498, 51.032 )
+transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, 4.782, 2.1498, 80.032 )
 input_capture_on_drag = true
 Downforce = -5.0
 DecelerationForce = 0.005
@@ -37,21 +37,27 @@ AccelerationRate = 1.02
 EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
+[node name="Camera" type="Camera" parent="TestPlayer"]
+transform = Transform( -1.62921e-07, -0.173648, 0.984808, 0, 0.984808, 0.173648, -1, 2.82909e-08, -1.60446e-07, 25, 5, 0 )
+current = true
+
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -53.968, 4.4, 51.218 )
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, 5.032, 4.4, 80.218 )
 ClipCameraException = NodePath("../TestPlayer")
+CollisionRadius = 1.0
 MaxCameraAngle = 35.0
 MinCameraAngle = -70.0
-ClipCamOffset = 2.0
-ViewCamOffset = 1.0
+ClipCamOffset = 0.0
+ViewCamOffset = 0.15
 ClipModifier = 1.0
+ClipCameraMargin = 0.0
 FollowSmoothing = 0.09
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
 MaxConfinedSpaceDistance = 9.0
 
 [node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
-near = 0.01
+fov = 177.0
 
 [node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="3"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185799, -0.260498, 0.250057 )

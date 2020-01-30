@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
 [ext_resource path="res://ECC_TPController/CheckInputs.gd" type="Script" id=2]
@@ -8,7 +8,6 @@ radial_segments = 8
 rings = 8
 
 [sub_resource type="SphereShape" id=2]
-radius = 3.0
 
 [sub_resource type="SphereMesh" id=3]
 
@@ -20,6 +19,8 @@ emission = Color( 0, 0.0862745, 1, 1 )
 emission_energy = 1.0
 emission_operator = 0
 emission_on_uv2 = false
+
+[sub_resource type="SphereMesh" id=5]
 
 [node name="ECC_ThirdPerson" type="Spatial" groups=[
 "noclip",
@@ -55,6 +56,7 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0, 8 )
+doppler_tracking = 1
 current = true
 near = 0.01
 far = 500.0
@@ -69,7 +71,7 @@ Make sure it matches the rotational "
 [node name="CanClipDetector" type="Area" parent="X Gimbal/ViewCamera" groups=[
 "noclip",
 ]]
-transform = Transform( 1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 1.5 )
+transform = Transform( 1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0.25 )
 input_ray_pickable = false
 
 [node name="CollisionShape" type="CollisionShape" parent="X Gimbal/ViewCamera/CanClipDetector" groups=[
@@ -78,7 +80,6 @@ input_ray_pickable = false
 shape = SubResource( 2 )
 
 [node name="DebugHelper" type="MeshInstance" parent="X Gimbal/ViewCamera/CanClipDetector/CollisionShape"]
-transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
 mesh = SubResource( 3 )
 material/0 = SubResource( 4 )
 
@@ -90,8 +91,16 @@ material/0 = SubResource( 4 )
 "noclip",
 ]]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8 )
-doppler_tracking = 2
-margin = 0.1
+doppler_tracking = 1
+fov = 170.0
+near = 0.01
+far = 500.0
+process_mode = 1
+
+[node name="MeshInstance" type="MeshInstance" parent="X Gimbal/ClipCameraTarget/ClippedCamera"]
+visible = false
+mesh = SubResource( 5 )
+material/0 = null
 
 [node name="ZoomMarkers" type="Spatial" parent="X Gimbal/ClipCameraTarget"]
 
