@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://TestPlayer.tscn" type="PackedScene" id=1]
 [ext_resource path="res://WallWithPillars5W3H.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Ceiling10x10.tscn" type="PackedScene" id=4]
 [ext_resource path="res://ECC_TPController/ECC_ThirdPersonController.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Sphere.tscn" type="PackedScene" id=6]
+[ext_resource path="res://ThinWall1D5W3H.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Debug.tscn" type="PackedScene" id=10]
 
 [sub_resource type="SpatialMaterial" id=1]
@@ -29,7 +30,7 @@ ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, 4.782, 2.1498, 80.032 )
+transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -16.218, 2.1498, 70.032 )
 input_capture_on_drag = true
 Downforce = -5.0
 DecelerationForce = 0.005
@@ -37,24 +38,20 @@ AccelerationRate = 1.02
 EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
-[node name="Camera" type="Camera" parent="TestPlayer"]
-transform = Transform( -1.62921e-07, -0.173648, 0.984808, 0, 0.984808, 0.173648, -1, 2.82909e-08, -1.60446e-07, 25, 5, 0 )
-current = true
-
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, 5.032, 4.4, 80.218 )
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -15.968, 4.4, 70.218 )
 ClipCameraException = NodePath("../TestPlayer")
+ClipCameraMargin = 0.0
 CollisionRadius = 1.0
 MaxCameraAngle = 35.0
 MinCameraAngle = -70.0
-ClipCamOffset = 0.0
-ViewCamOffset = 0.15
-ClipModifier = 1.0
-ClipCameraMargin = 0.0
 FollowSmoothing = 0.09
 ZoomDelay = 0.25
 MinConfinedSpaceDistance = 0.5
 MaxConfinedSpaceDistance = 9.0
+
+[node name="ViewCamera" parent="ECC_ThirdPerson/X Gimbal" index="1"]
+fov = 65.0
 
 [node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
 fov = 177.0
@@ -103,6 +100,24 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 82 )
 
 [node name="BlankWall5W3H7" parent="Walls" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 76 )
+
+[node name="ThinWall1D5W3H" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 43 )
+
+[node name="ThinWall1D5W3H5" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 32, 6, 46 )
+
+[node name="ThinWall1D5W3H6" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 42, 6, 46 )
+
+[node name="ThinWall1D5W3H3" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3, 43 )
+
+[node name="ThinWall1D5W3H4" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3, 49 )
+
+[node name="ThinWall1D5W3H2" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 49 )
 
 [node name="PillarWalls" type="Spatial" parent="."]
 

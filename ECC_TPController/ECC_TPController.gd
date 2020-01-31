@@ -13,6 +13,18 @@ export (NodePath) var ClipCamera
 # so that we don't clip to ourselves!
 export (NodePath) var ClipCameraException
 
+# export our clip cam's margin
+export (float) var ClipCameraMargin = 0.1
+
+# export the clip cam's FOV value
+export (float) var ClipCameraFOV = 177
+
+# export the view cam's FOV value
+export (float) var ViewCameraFOV = 65
+
+# export our view cam distance offset
+export (float) var ViewCameraDistanceOffset = 0.25
+
 # export our CameraSmoothing for the camera
 export (float) var CameraSmoothing = 0.03
 
@@ -27,17 +39,7 @@ export (float) var MaxCameraAngle = 45
 export (float) var MinCameraAngle = -50
 
 # export our minimum camera distance
-export (float) var MinViewCamDistance = 0.5
-
-# export our clip cam z adjuster
-export (float) var ClipCamOffset = 3
-
-# export our view cam offset adjuster
-export (float) var ViewCamOffset = 0
-
-export (float) var ClipModifier = 1.01
-
-export (float) var ClipCameraMargin = 0.1
+export (float) var MinViewCameraDistance = 0.5
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = true
@@ -93,12 +95,10 @@ var raycast_offset
 # other variables
 var max_zoom_level
 var rot_y_angle = 0
-var new_lerp_weight
 var distance = 0.0
 var new_distance = 0.0
 var clip_offset = 0.0
 var view_cam_z = 0.0
-var new_clip_y_pos = 0.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -144,14 +144,12 @@ func _ready():
 	
 	# set the default zoom level of the cameras
 	# set the clip camera to be one unit BEHIND of the zoom marker
-	clip_cam.transform.origin.z = zooms[0] + ClipCamOffset
+	clip_cam.transform.origin.z = zooms[0]
 	print("Clip Cam Positioned at " + str(clip_cam.transform.origin.z))
 	
 	# set the view camera to be one unit AHEAD of the zoom marker
-	view_cam.transform.origin.z = zooms[0] - ViewCamOffset
+	view_cam.transform.origin.z = zooms[0] - ViewCameraDistanceOffset
 	print("View Cam Positioned at " + str(view_cam.transform.origin.z))
-	
-	print("Zoom value 1 at " + str(zooms[0]))
 	
 	# set view_cam_z to the view cam's z transform
 	view_cam_z = view_cam.transform.origin.z
@@ -162,7 +160,7 @@ func _ready():
 	
 	# set the size of our collision probe
 	collision_probe_shape.shape.radius = CollisionRadius
-	print("Set CollisionRadius to: " + str(collision_probe_shape.shape.radius))
+	print("Set CollisionRadius to " + str(collision_probe_shape.shape.radius))
 	
 	# capture the mouse if we have enabled mouse input
 	if EnableMouseInput:
@@ -171,13 +169,19 @@ func _ready():
 		
 	$ZoomTimer.wait_time = ZoomDelay
 	
-	new_lerp_weight = CameraSmoothing
-	
 	# set the default distance
 	distance = view_cam_z
 	
+	# set the margin for our clip camera
 	clip_cam.set_margin(ClipCameraMargin)
-	print("Clip Cam Margin set to: " + str(clip_cam.get_margin()))
+	print("Clip Cam Margin set to " + str(clip_cam.get_margin()))
+	
+	# set the FOV values for both our clip cam and view cam
+	clip_cam.set_fov(ClipCameraFOV)
+	view_cam.set_fov(ViewCameraFOV)
+	
+	print("Set Clip Camera's FOV to " + str(clip_cam.get_fov()))
+	print("Set View Camera's FOV to " + str(view_cam.get_fov()))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -247,7 +251,7 @@ func _position_camera():
 		self.global_transform.origin = player.global_transform.origin + gimbal_offset
 	
 	# position the clip cam
-	clip_cam.transform.origin.z = zooms[zoom] + ClipCamOffset
+	clip_cam.transform.origin.z = zooms[zoom]
 
 	
 func _rotate_camera(delta):
@@ -295,7 +299,7 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
+		new_distance = zooms[zoom] - ViewCameraDistanceOffset - clip_offset
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
@@ -306,7 +310,7 @@ func _check_for_occlusion():
 			distance = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
+		new_distance = zooms[zoom] - ViewCameraDistanceOffset - clip_offset
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
@@ -318,14 +322,14 @@ func _check_for_occlusion():
 		elif clipping and stickInput.length() == 0 and player_input == 0:
 			# we are not rotating the camera or moving the player, and we're still clipping to something,
 			# so show the player by snapping the camera forward again
-			view_cam_z = zooms[zoom] - ViewCamOffset - clip_offset * ClipModifier
+			view_cam_z = zooms[zoom] - ViewCameraDistanceOffset - clip_offset
 		else:
 			# no collision at all, so set the camera to the correct distance
-			distance = zooms[zoom] - ViewCamOffset
+			distance = zooms[zoom] - ViewCameraDistanceOffset
 			
 	# ensure the camera doesn't go past its distance minimum
-	if view_cam_z <= MinViewCamDistance:
-		view_cam_z = MinViewCamDistance
+	if view_cam_z <= MinViewCameraDistance:
+		view_cam_z = MinViewCameraDistance
 		
 	# position the camera to the currently defined distance
 	view_cam_z = lerp(view_cam_z, distance, CameraSmoothing)
