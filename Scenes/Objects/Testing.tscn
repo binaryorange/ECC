@@ -1,0 +1,270 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Scenes/Objects/TestPlayer.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Objects/WallWithPillars5W3H.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Objects/BlankWall5W3H.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Objects/Ceiling10x10.tscn" type="PackedScene" id=4]
+[ext_resource path="res://ECC_TPController/ECC_ThirdPersonController.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Scenes/Objects/Sphere.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scenes/Objects/ThinWall1D5W3H.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Materials/lightergrey.tres" type="Material" id=8]
+[ext_resource path="res://Pillar.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Debug.tscn" type="PackedScene" id=10]
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="PhysicsMaterial" id=2]
+friction = 0.01
+
+[sub_resource type="BoxShape" id=3]
+
+[node name="Testing" type="Spatial"]
+
+[node name="Debug" parent="." instance=ExtResource( 10 )]
+Player = NodePath("../TestPlayer")
+ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
+
+[node name="TestPlayer" parent="." groups=[
+"noclip",
+] instance=ExtResource( 1 )]
+transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -16.218, 2.1498, 70.032 )
+input_capture_on_drag = true
+Downforce = -5.0
+DecelerationForce = 0.005
+AccelerationRate = 1.02
+EnableSlide = false
+FollowCamera = NodePath("../ECC_ThirdPerson")
+
+[node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -15.968, 4.4, 70.218 )
+Player = NodePath("../TestPlayer")
+ViewCameraFOV = 60.0
+MaxCameraAngle = 35.0
+MinCameraAngle = -70.0
+FollowSmoothing = 0.09
+
+[node name="MouseSettings" parent="ECC_ThirdPerson" index="2"]
+MouseSensitivity = 3.0
+ViewCamDistanceOverride = 0.25
+
+[node name="ViewCamera" parent="ECC_ThirdPerson/X Gimbal" index="1"]
+fov = 65.0
+
+[node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
+fov = 177.0
+
+[node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185799, -0.260498, 0.250057 )
+
+[node name="Floor" type="MeshInstance" parent="."]
+transform = Transform( 100, 0, 0, 0, 0.5, 0, 0, 0, 100, 0, -0.5, 0 )
+mesh = SubResource( 1 )
+material/0 = ExtResource( 8 )
+
+[node name="Floor" type="StaticBody" parent="Floor"]
+physics_material_override = SubResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Floor/Floor"]
+shape = SubResource( 3 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
+shadow_enabled = true
+
+[node name="Walls" type="Spatial" parent="."]
+
+[node name="BlankWall5W3H" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 70 )
+
+[node name="BlankWall5W3H2" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 64 )
+
+[node name="BlankWall5W3H6" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 70 )
+
+[node name="BlankWall5W3H5" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 64 )
+
+[node name="BlankWall5W3H4" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 82 )
+
+[node name="BlankWall5W3H3" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 76 )
+
+[node name="BlankWall5W3H8" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 82 )
+
+[node name="BlankWall5W3H7" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 76 )
+
+[node name="ThinWall1D5W3H" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 43 )
+
+[node name="ThinWall1D5W3H5" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 32, 5.87803, 46 )
+
+[node name="ThinWall1D5W3H6" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 42, 5.87803, 46 )
+
+[node name="ThinWall1D5W3H3" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3, 43 )
+
+[node name="ThinWall1D5W3H4" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3, 49 )
+
+[node name="ThinWall1D5W3H2" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 49 )
+
+[node name="PillarWalls" type="Spatial" parent="."]
+
+[node name="WallWithPillars5W3H" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 41 )
+
+[node name="WallWithPillars5W3H2" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 41 )
+
+[node name="WallWithPillars5W3H8" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 41 )
+
+[node name="WallWithPillars5W3H7" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 41 )
+
+[node name="WallWithPillars5W3H12" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 41 )
+
+[node name="WallWithPillars5W3H11" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 41 )
+
+[node name="WallWithPillars5W3H4" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 50 )
+
+[node name="WallWithPillars5W3H3" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 50 )
+
+[node name="WallWithPillars5W3H14" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 50 )
+
+[node name="WallWithPillars5W3H13" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 50 )
+
+[node name="WallWithPillars5W3H22" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 50 )
+
+[node name="WallWithPillars5W3H21" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 50 )
+
+[node name="WallWithPillars5W3H24" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 50 )
+
+[node name="WallWithPillars5W3H23" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 50 )
+
+[node name="WallWithPillars5W3H6" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 59 )
+
+[node name="WallWithPillars5W3H5" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 59 )
+
+[node name="WallWithPillars5W3H10" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 59 )
+
+[node name="WallWithPillars5W3H9" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 59 )
+
+[node name="WallWithPillars5W3H16" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 59 )
+
+[node name="WallWithPillars5W3H15" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 59 )
+
+[node name="WallWithPillars5W3H18" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 59 )
+
+[node name="WallWithPillars5W3H17" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 59 )
+
+[node name="WallWithPillars5W3H20" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3, 41 )
+
+[node name="WallWithPillars5W3H19" parent="PillarWalls" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 41 )
+
+[node name="Ceilings" type="Spatial" parent="."]
+
+[node name="Ceiling10x10" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 13, 50 )
+
+[node name="Ceiling10x11" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 13, 50 )
+
+[node name="Ceiling10x13" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -8, 7, 31 )
+
+[node name="Ceiling10x12" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 7, 73 )
+
+[node name="Lights" type="Spatial" parent="."]
+
+[node name="OmniLight" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 45.5996 )
+
+[node name="OmniLight2" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 45.5996 )
+
+[node name="OmniLight3" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 45.5996 )
+
+[node name="OmniLight4" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -19.9985, 9.03218, 45.6 )
+
+[node name="OmniLight8" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 54.5996 )
+
+[node name="OmniLight7" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 54.5996 )
+
+[node name="OmniLight6" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 9, 54.5996 )
+
+[node name="OmniLight5" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -19.9985, 9.03218, 54.6 )
+
+[node name="Sphere" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
+
+[node name="Sphere5" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 0, 0 )
+
+[node name="Sphere2" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 9 )
+
+[node name="Sphere8" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -9 )
+
+[node name="Sphere4" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 9 )
+
+[node name="Sphere7" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, -9 )
+
+[node name="Sphere3" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 12 )
+
+[node name="Sphere6" parent="Sphere" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, -14 )
+
+[node name="Pillar" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 10, 4, 0 )
+
+[node name="Pillar2" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 15, 4, 0 )
+
+[node name="Pillar3" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 4, 0, 0, 0, 1, 20, 4, 0 )
+
+[node name="Pillar4" parent="." instance=ExtResource( 9 )]
+transform = Transform( 3, 0, 0, 0, 4, 0, 0, 0, 3, 30, 4, 0 )
+
+[editable path="TestPlayer"]
+
+[editable path="ECC_ThirdPerson"]

@@ -1,7 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://ECC_TPController/ECC_TPController.gd" type="Script" id=1]
 [ext_resource path="res://ECC_TPController/CheckInputs.gd" type="Script" id=2]
+[ext_resource path="res://ECC_TPController/error_logger.gd" type="Script" id=3]
+[ext_resource path="res://ECC_TPController/MouseSettings.gd" type="Script" id=4]
 
 [sub_resource type="SphereMesh" id=1]
 radial_segments = 8
@@ -20,28 +22,25 @@ emission_energy = 1.0
 emission_operator = 0
 emission_on_uv2 = false
 
-[sub_resource type="SphereMesh" id=5]
-
-[node name="ECC_ThirdPerson" type="Spatial" groups=[
-"noclip",
-]]
+[node name="ECC_ThirdPerson" type="Spatial"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 2.5, 0.25 )
 script = ExtResource( 1 )
 ViewCamera = NodePath("X Gimbal/ViewCamera")
 ClipCamera = NodePath("X Gimbal/ClipCameraTarget/ClippedCamera")
 
-[node name="CheckInputs" type="Node" parent="." groups=[
-"noclip",
-]]
+[node name="ECCLog" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="CheckInputs" type="Node" parent="."]
 script = ExtResource( 2 )
 
-[node name="X Gimbal" type="Spatial" parent="." groups=[
-"noclip",
-]]
+[node name="MouseSettings" type="Node" parent="."]
+script = ExtResource( 4 )
+MouseMode = true
 
-[node name="HelperMesh" type="MeshInstance" parent="X Gimbal" groups=[
-"noclip",
-]]
+[node name="X Gimbal" type="Spatial" parent="."]
+
+[node name="HelperMesh" type="MeshInstance" parent="X Gimbal"]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = null
@@ -52,10 +51,8 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 "
 }
 
-[node name="ViewCamera" type="Camera" parent="X Gimbal" groups=[
-"noclip",
-]]
-transform = Transform( 1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0, 8 )
+[node name="ViewCamera" type="Camera" parent="X Gimbal"]
+transform = Transform( 1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0, 5 )
 doppler_tracking = 1
 current = true
 near = 0.01
@@ -68,9 +65,7 @@ We feed it the positioning information from the ClippedCamera node.
 Make sure it matches the rotational "
 }
 
-[node name="CanClipDetector" type="Area" parent="X Gimbal/ViewCamera" groups=[
-"noclip",
-]]
+[node name="CanClipDetector" type="Area" parent="X Gimbal/ViewCamera"]
 transform = Transform( 1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0.25 )
 input_ray_pickable = false
 
@@ -83,49 +78,26 @@ shape = SubResource( 2 )
 mesh = SubResource( 3 )
 material/0 = SubResource( 4 )
 
-[node name="ClipCameraTarget" type="Spatial" parent="X Gimbal" groups=[
-"noclip",
-]]
+[node name="ClipCameraTarget" type="Spatial" parent="X Gimbal"]
 
-[node name="ClippedCamera" type="ClippedCamera" parent="X Gimbal/ClipCameraTarget" groups=[
-"noclip",
-]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8 )
+[node name="ClippedCamera" type="ClippedCamera" parent="X Gimbal/ClipCameraTarget"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
 doppler_tracking = 1
 fov = 170.0
 near = 0.01
 far = 500.0
 process_mode = 1
 
-[node name="MeshInstance" type="MeshInstance" parent="X Gimbal/ClipCameraTarget/ClippedCamera"]
-visible = false
-mesh = SubResource( 5 )
-material/0 = null
-
 [node name="ZoomMarkers" type="Spatial" parent="X Gimbal/ClipCameraTarget"]
 
-[node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
-"noclip",
-]]
+[node name="Zoom1" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
 
-[node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
-"noclip",
-]]
+[node name="Zoom2" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9 )
 
-[node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers" groups=[
-"noclip",
-]]
+[node name="Zoom3" type="Position3D" parent="X Gimbal/ClipCameraTarget/ZoomMarkers"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13 )
-
-[node name="ZoomTimer" type="Timer" parent="." groups=[
-"noclip",
-]]
-wait_time = 0.1
-__meta__ = {
-"_editor_description_": "We use this timer to prevent the player from \"blasting\" through different zoom levels."
-}
 
 [node name="ConfinedSpaceCheck" type="RayCast" parent="." groups=[
 "noclip",
@@ -134,4 +106,3 @@ enabled = true
 cast_to = Vector3( 0, 15, 0 )
 [connection signal="body_entered" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_entered"]
 [connection signal="body_exited" from="X Gimbal/ViewCamera/CanClipDetector" to="." method="_on_CanClipDetector_body_exited"]
-[connection signal="timeout" from="ZoomTimer" to="." method="_on_ZoomTimer_timeout"]

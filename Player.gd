@@ -48,8 +48,6 @@ func _ready():
 	for i in range ($FloorTestArray.get_child_count()):
 		floor_test_array.insert(floor_test_array.size(), $FloorTestArray.get_child(i))
 		floor_test_array[i].add_exception(self)
-		print("added " + str(floor_test_array[i].name))
-		
 		
 	if EnableSlide:
 		can_slide = true
@@ -86,7 +84,6 @@ func _physics_process(delta):
 		is_jumping = false
 		is_falling = true
 	elif is_on_floor():
-		is_jumping = false
 		is_falling = false
 	else:
 		is_falling = false

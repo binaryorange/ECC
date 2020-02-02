@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://MovingPlatform.gd" type="Script" id=1]
+[ext_resource path="res://Materials/helper_mesh_x.tres" type="Material" id=2]
+
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 1, 0.470588, 0, 1 )
+roughness = 0.53
+
+[sub_resource type="CubeMesh" id=2]
+material = SubResource( 1 )
+
+[sub_resource type="BoxShape" id=3]
+
+[node name="MovingPlatform" type="Spatial"]
+script = ExtResource( 1 )
+RotatePlatform = false
+
+[node name="Body" type="MeshInstance" parent="."]
+transform = Transform( 5, 0, 0, 0, 0.25, 0, 0, 0, 5, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Body" groups=[
+"dynamic_platform",
+]]
+
+[node name="CollisionShape" type="CollisionShape" parent="Body/StaticBody"]
+shape = SubResource( 3 )
+
+[node name="Destination Marker" type="Position3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
+
+[node name="GhostBody" type="MeshInstance" parent="Destination Marker"]
+transform = Transform( 5, 0, 0, 0, 0.25, 0, 0, 0, 5, 0.0126476, 0.0181389, -0.00513458 )
+mesh = SubResource( 2 )
+material/0 = ExtResource( 2 )
+
+[node name="UpdatePosition" type="Tween" parent="."]
+repeat = true
+playback/repeat = true

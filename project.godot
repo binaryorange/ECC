@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="ECC_ThirdPersonController"
-run/main_scene="res://Testing.tscn"
+run/main_scene="res://Scenes/Objects/Testing.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -121,4 +121,5 @@ jump={
 
 quality/shadows/filter_mode=2
 quality/filters/use_nearest_mipmap_filter=true
-environment/default_environment="res://default_env_new.tres"
+environment/default_clear_color=Color( 0.301961, 0.301961, 0.301961, 1 )
+environment/default_environment="res://default_env.tres"
