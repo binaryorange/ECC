@@ -21,8 +21,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-GameManager="*res://GameManager.gd"
-GameFunctions="*res://GlobalGameFunctions.gd"
+GameManager="*res://Scripts/Global/GameManager.gd"
+GameFunctions="*res://Scripts/Global/GlobalGameFunctions.gd"
 
 [display]
 

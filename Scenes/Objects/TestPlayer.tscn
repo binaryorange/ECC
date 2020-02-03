@@ -1,9 +1,11 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://DynamicPlatformCheck.gd" type="Script" id=1]
-[ext_resource path="res://Player.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Misc/DynamicPlatformCheck.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Misc/Player.gd" type="Script" id=2]
 [ext_resource path="res://Materials/lightblue.tres" type="Material" id=3]
 [ext_resource path="res://Materials/nose.tres" type="Material" id=4]
+
+
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 2.0

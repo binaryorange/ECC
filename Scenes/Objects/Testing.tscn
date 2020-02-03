@@ -8,8 +8,8 @@
 [ext_resource path="res://Scenes/Objects/Sphere.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Scenes/Objects/ThinWall1D5W3H.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Materials/lightergrey.tres" type="Material" id=8]
-[ext_resource path="res://Pillar.tscn" type="PackedScene" id=9]
-[ext_resource path="res://Debug.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Scenes/Objects/Pillar.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Scenes/GUI/Debug.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CubeMesh" id=1]
 
@@ -21,13 +21,14 @@ friction = 0.01
 [node name="Testing" type="Spatial"]
 
 [node name="Debug" parent="." instance=ExtResource( 10 )]
+visible = false
 Player = NodePath("../TestPlayer")
 ViewCam = NodePath("../ECC_ThirdPerson/X Gimbal/ViewCamera")
 
 [node name="TestPlayer" parent="." groups=[
 "noclip",
 ] instance=ExtResource( 1 )]
-transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -16.218, 2.1498, 70.032 )
+transform = Transform( 3.69552e-07, 0, -1, 0, 1, 0, 1, 0, 3.69552e-07, -42.218, 2.1498, 50.032 )
 input_capture_on_drag = true
 Downforce = -5.0
 DecelerationForce = 0.005
@@ -36,7 +37,7 @@ EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -15.968, 4.90267, 70.218 )
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -41.968, 4.90267, 50.218 )
 Target = NodePath("../TestPlayer")
 
 [node name="MouseControls" parent="ECC_ThirdPerson" index="2"]
@@ -67,7 +68,7 @@ physics_material_override = SubResource( 2 )
 shape = SubResource( 3 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 7, 0 )
+transform = Transform( -1, 2.33979e-07, -2.26773e-07, 0, 0.695963, 0.718077, 3.25841e-07, 0.718077, -0.695963, 0, 7, 0 )
 shadow_enabled = true
 
 [node name="Walls" type="Spatial" parent="."]
@@ -96,6 +97,30 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 82 )
 [node name="BlankWall5W3H7" parent="Walls" instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 76 )
 
+[node name="BlankWall5W3H16" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3, 70 )
+
+[node name="BlankWall5W3H15" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3, 64 )
+
+[node name="BlankWall5W3H14" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3, 70 )
+
+[node name="BlankWall5W3H13" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3, 64 )
+
+[node name="BlankWall5W3H12" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3, 82 )
+
+[node name="BlankWall5W3H11" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3, 76 )
+
+[node name="BlankWall5W3H10" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3, 82 )
+
+[node name="BlankWall5W3H9" parent="Walls" instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3, 76 )
+
 [node name="ThinWall1D5W3H" parent="Walls" instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 43 )
 
@@ -113,6 +138,24 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 3, 49 )
 
 [node name="ThinWall1D5W3H2" parent="Walls" instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 3, 49 )
+
+[node name="ThinWall1D5W3H12" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 3, 43 )
+
+[node name="ThinWall1D5W3H11" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 52, 5.87803, 46 )
+
+[node name="ThinWall1D5W3H10" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 62, 5.87803, 46 )
+
+[node name="ThinWall1D5W3H9" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 3, 43 )
+
+[node name="ThinWall1D5W3H8" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 62, 3, 49 )
+
+[node name="ThinWall1D5W3H7" parent="Walls" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 52, 3, 49 )
 
 [node name="PillarWalls" type="Spatial" parent="."]
 
@@ -201,6 +244,9 @@ transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -
 
 [node name="Ceiling10x12" parent="Ceilings" instance=ExtResource( 4 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 7, 73 )
+
+[node name="Ceiling10x14" parent="Ceilings" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 7, 73 )
 
 [node name="Lights" type="Spatial" parent="."]
 
