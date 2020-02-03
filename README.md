@@ -2,11 +2,11 @@
 Improving Godot's default behavior of the ClippedCamera node.
 
 # Project Goals
--Reusable scene consisting of a typical gimbal setup with easy-to-use values in Inspector tab.
+- Reusable scene consisting of a typical gimbal setup with easy-to-use values in Inspector tab.
 
--Controllable with mouse/keyboard or gamepad with individual settings for both.
+- Controllable with mouse/keyboard or gamepad with individual settings for both.
 
--Take the chore of creating a polished third-person camera system away so that the end-user can spend more time developing their game!
+- Take the chore of creating a polished third-person camera system away so that the end-user can spend more time developing their game!
 
 # What is working so far?
 - Scene is fully reusable and can be imported into any project easily.
