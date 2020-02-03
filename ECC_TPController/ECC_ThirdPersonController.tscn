@@ -34,9 +34,9 @@ script = ExtResource( 3 )
 [node name="CheckInputs" type="Node" parent="."]
 script = ExtResource( 2 )
 
-[node name="MouseSettings" type="Node" parent="."]
+[node name="MouseControls" type="Node" parent="."]
 script = ExtResource( 4 )
-MouseMode = true
+ViewCamDistanceOverride = 1.0
 
 [node name="X Gimbal" type="Spatial" parent="."]
 
@@ -52,7 +52,7 @@ Use this to to set where you want your camera to rotate  arond the player - DO N
 }
 
 [node name="ViewCamera" type="Camera" parent="X Gimbal"]
-transform = Transform( 1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0, 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
 doppler_tracking = 1
 current = true
 near = 0.01
@@ -66,7 +66,7 @@ Make sure it matches the rotational "
 }
 
 [node name="CanClipDetector" type="Area" parent="X Gimbal/ViewCamera"]
-transform = Transform( 1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0.25 )
+transform = Transform( 1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0 )
 input_ray_pickable = false
 
 [node name="CollisionShape" type="CollisionShape" parent="X Gimbal/ViewCamera/CanClipDetector" groups=[

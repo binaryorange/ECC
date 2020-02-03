@@ -9,9 +9,9 @@ export (NodePath) var ViewCamera
 # this will capture our clip camera
 export (NodePath) var ClipCamera
 
-# this will capture our exception for the clip camera, which should be the player,
-# so that we don't clip to ourselves!
-export (NodePath) var Player
+# this is our target that the camera needs to "see", and it will also be excluded from collision
+# with the camera.
+export (NodePath) var Target
 
 # export our clip cam's margin
 export (float, 0, 32) var ClipCameraMargin = 0
@@ -23,7 +23,7 @@ export (float, 1, 179) var ClipCameraFOV = 177
 export (float, 1, 179) var ViewCameraFOV = 65
 
 # export our view cam distance offset
-export (float, 0, 1.0) var ViewCameraDistanceOffset = 0.25
+export (float, 0, 2.0) var ViewCameraDistanceOffset = 1.0
 
 # export our minimum camera distance
 export (float, -2, 2) var MinViewCameraDistance = -1.5
@@ -32,21 +32,21 @@ export (float, -2, 2) var MinViewCameraDistance = -1.5
 export (float, 0.01, 1.0) var CameraSmoothness = 0.03
 
 # export our collision probe size
-export (float, 1.0, 2.0) var CollisionProbeSize = 1.0
+export (float, 1.0, 3.0) var CollisionProbeSize = 3.0
 
 # this lets us set the maximum distance that the raycast for detecting Confined Spaces will work
-export (float, 2.0, 16.0) var ConfinedSpaceDistance = 8.0
+export (float, 0.0, 16.0) var ConfinedSpaceDistance = 10.0
 
 # export our rotational speed
 export (float, 0.1, 2.0) var RotateSensitivity = 1.75
 
 # export our max and min camera angles
-export (float) var MaxCameraAngle = 45
-export (float) var MinCameraAngle = -50
+export (float) var MaxCameraAngle = 25
+export (float) var MinCameraAngle = -60
 
 # allow the user to choose if there's a follow delay or not
 export (bool) var EnableFollowDelay = true
-export (float) var FollowSmoothing = 0.07
+export (float) var FollowSmoothing = 0.09
 
 # our local variables
 
@@ -66,7 +66,7 @@ var x_gimbal
 var player
 var collision_probe_shape
 var helper_mesh
-var mouse_settings
+var MouseControls
 
 # our booleans
 var can_clip = false
@@ -89,6 +89,7 @@ var new_distance = 0.0
 var clip_offset = 0.0
 var view_cam_z = 0.0
 var new_view_cam_offset = 0.0
+var rotational_offset = 0.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -96,25 +97,25 @@ func _ready():
 	# grab our nodes
 	y_gimbal = self
 	x_gimbal = $"X Gimbal"
-	mouse_settings = $MouseSettings
+	MouseControls = $MouseControls
 	
 	# check ViewCamera, if it's empty, throw an error, if not, assign it to view_cam
 	if !ViewCamera.is_empty():
 		view_cam = get_node(ViewCamera)
 	else:
-		$ECCLog.log_error($ECCLog.WARN.ERR, "No node assigned to %s! Assign a node to %s and try again.", $ECCLog.NODE.V_CAM)
+		$ECCLog.unassigned_node_error($ECCLog.WARN_LEVEL.ERROR, $ECCLog.NODE_NAME.V_CAM)
 		
 	# do the same for ClipCamera
 	if !ClipCamera.is_empty():
 		clip_cam = get_node(ClipCamera)
 	else:
-		$ECCLog.log_error($ECCLog.WARN.ERR, "No node assigned to %s! Assign a node to %s and try again.", $ECCLog.NODE.C_CAM)
+		$ECCLog.unassigned_node_error($ECCLog.WARN_LEVEL.ERROR, $ECCLog.NODE_NAME.C_CAM)
 	
 	# and the same for the player
-	if !Player.is_empty():
-		player = get_node(Player)
+	if !Target.is_empty():
+		player = get_node(Target)
 	else:
-		$ECCLog.log_error($ECCLog.WARN.ERR, "No node assigned to %s! Assign a node to %s and try again.", $ECCLog.NODE.CC_PLAYER)
+		$ECCLog.unassigned_node_error($ECCLog.WARN_LEVEL.ERROR, $ECCLog.NODE_NAME.TARGET)
 		
 	helper_mesh = $"X Gimbal/HelperMesh"
 	collision_probe_shape = $"X Gimbal/ViewCamera/CanClipDetector/CollisionShape"
@@ -137,13 +138,13 @@ func _ready():
 	print("Stored the Gimbal's offset value as " + str(gimbal_offset))
 	
 	# capture the mouse if we have enabled mouse input
-	if mouse_settings.MouseMode:
+	if MouseControls.EnableMouse:
 		# ensure we capture the mouse
-		mouse_settings.mouse_captured = true
+		MouseControls.EnableMouse = true
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		
 		# now make sure our View Cam Offset is set appropriately
-		new_view_cam_offset = mouse_settings.ViewCamDistanceOverride * mouse_settings.ClipDistanceMultiplier
+		new_view_cam_offset = MouseControls.ViewCamDistanceOverride
 	else:
 		new_view_cam_offset = ViewCameraDistanceOffset
 		
@@ -170,9 +171,9 @@ func _ready():
 	# set view_cam_z to the view cam's z transform
 	view_cam_z = view_cam.transform.origin.z
 
-	# add the Player node
-	clip_cam.add_exception(get_node(Player))
-	print("Added " + str(get_node(Player).name) + " to " + str(get_node(ClipCamera).name) + " as collision exception")
+	# add the Target node
+	clip_cam.add_exception(get_node(Target))
+	print("Added " + str(get_node(Target).name) + " to " + str(get_node(ClipCamera).name) + " as collision exception")
 	
 	# set the size of our collision probe
 	collision_probe_shape.shape.radius = CollisionProbeSize
@@ -193,34 +194,25 @@ func _ready():
 	print("Set View Camera's FOV to " + str(view_cam.get_fov()))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _physics_process(delta):
 	_get_input()
 	_update_camera(delta)
 	
+	
 # support mouse input
 func _input(event):
-	if mouse_settings.mouse_captured:
+	if MouseControls.EnableMouse:
 		# move the gimbal depending on mouse movement
 		if event is InputEventMouseMotion:
 			
 			# handle upwards movement
-			if event.relative.y < mouse_settings.MaxMouseMoveSpeed and event.relative.y > -mouse_settings.MaxMouseMoveSpeed:
-				cam_up = deg2rad(event.relative.y * -1)
-			elif event.relative.y < -mouse_settings.MaxMouseMoveSpeed:
-				cam_up = deg2rad(-mouse_settings.MaxMouseMoveSpeed * -1)
-			elif event.relative.y >= mouse_settings.MaxMouseMoveSpeed:
-				cam_up = deg2rad(mouse_settings.MaxMouseMoveSpeed * -1)
+			cam_up = deg2rad(event.relative.y * -1)
 			
 			# handle sideways movement
-			#if event.relative.x < mouse_settings.MaxMouseMoveSpeed and event.relative.x > -mouse_settings.MaxMouseMoveSpeed:
 			cam_right = deg2rad(event.relative.x)
-			#elif event.relative.x < -mouse_settings.MaxMouseMoveSpeed:
-			#	cam_right = deg2rad(-mouse_settings.MaxMouseMoveSpeed * 100)
 			
-			# set mouse_moved to true to tell the camera we are moving the gimbal
-			mouse_settings.mouse_moved = true
-			
-
+			# we are moving 
+			MouseControls.mouse_moved = true
 			
 		# change the zoom level depending on which mouse wheel action has taken place
 		if event is InputEventMouseButton:
@@ -233,7 +225,7 @@ func _input(event):
 func _get_input():
 	
 	# get joystick movement data if we are not using the mouse
-	if !mouse_settings.mouse_captured:
+	if !MouseControls.EnableMouse:
 		
 		# store the player's input information
 		player_right = Input.get_action_strength("move_left") - Input.get_action_strength("move_right")
@@ -257,28 +249,28 @@ func _get_input():
 				
 	# uncapture or recapture the mouse
 	if Input.is_action_just_pressed("capture_mouse"):
-		mouse_settings.mouse_captured = !mouse_settings.mouse_captured
+		MouseControls.EnableMouse = !MouseControls.EnableMouse
 		
-		if mouse_settings.mouse_captured:
+		if MouseControls.EnableMouse:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			new_view_cam_offset = mouse_settings.ViewCamDistanceOverride * mouse_settings.ClipDistanceMultiplier
+			new_view_cam_offset = MouseControls.ViewCamDistanceOverride
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 			new_view_cam_offset = ViewCameraDistanceOffset
 
 # update the camera's position and rotation
 func _update_camera(delta):
-	# now check for occluding geometry
-	_check_for_occlusion()
-	
 	# update the camera's position
 	_position_camera()
 	
-	# now update the camera's rotation
-	_rotate_camera(delta)
-	
 	# now check for any confined spaces
 	_confined_space_check()
+	
+	# now check for occluding geometry
+	_check_for_occlusion()
+	
+	# now update the camera's rotation
+	_rotate_camera(delta)
 	
 	# now rotate to the player
 	_rotate_to_player()
@@ -300,21 +292,30 @@ func _position_camera():
 func _rotate_camera(delta):
 	
 	# set the rotational values of the gimbals
-	if !mouse_settings.mouse_captured:
+	if !MouseControls.EnableMouse:
 		self.rotate_y(stickInput.x * RotateSensitivity * delta)
 		x_gimbal.rotate_x(stickInput.y * RotateSensitivity * delta)
-	elif mouse_settings.mouse_captured and mouse_settings.mouse_moved:
-		self.rotate_y(-cam_right/mouse_settings.MouseSensitivity * delta)
-		x_gimbal.rotate_x(cam_up/mouse_settings.MouseSensitivity * delta)
+	elif MouseControls.EnableMouse and MouseControls.mouse_moved:
+		self.rotate_y(-cam_right * MouseControls.MouseSensitivity * delta)
+		x_gimbal.rotate_x(cam_up * MouseControls.MouseSensitivity * delta)
 		
 	# reset mouse_moved so that we don't update the gimbal's rotation automatically every frame
 	# while using the mouse instead of the gamepad
-	mouse_settings.mouse_moved = false
+	MouseControls.mouse_moved = false
 	
 	# clamp the x rotation
 	var x_gimbal_rotation = x_gimbal.rotation_degrees
 	x_gimbal_rotation.x = clamp(x_gimbal_rotation.x, MinCameraAngle, MaxCameraAngle)
 	x_gimbal.rotation_degrees = x_gimbal_rotation
+	
+	# adjust rotation of camera depending on angle
+	view_cam.rotation_degrees.x = (x_gimbal_rotation.x)/5
+	
+	# get the rotational offset data and use it to position the camera
+	if view_cam.rotation_degrees.x > 0:
+		rotational_offset = 0
+	else:
+		rotational_offset = 0
 
 # check for occluding objects
 func _check_for_occlusion():
@@ -343,7 +344,7 @@ func _check_for_occlusion():
 	if can_clip:
 		
 		# set the new distance
-		new_distance = zooms[zoom] - new_view_cam_offset - clip_offset
+		new_distance = zooms[zoom] - new_view_cam_offset - rotational_offset - clip_offset
 		
 		# check the new distance. If it is less than the current distance, immediately clip to the new distance
 		if new_distance < view_cam_z:
@@ -354,7 +355,7 @@ func _check_for_occlusion():
 			distance = new_distance
 	else:
 		# set the new distance
-		new_distance = zooms[zoom] - new_view_cam_offset - clip_offset
+		new_distance = zooms[zoom] - new_view_cam_offset - rotational_offset - clip_offset
 		
 		# lerp the camera backwards with the clip offset in mind because there *IS* a collision, it's just
 		# not registering yet but we know it will
@@ -363,13 +364,18 @@ func _check_for_occlusion():
 			# set distance with clip offset in mind
 			distance = new_distance
 			
-		elif clipping and stickInput.length() == 0 and player_input == 0:
+		elif !MouseControls.EnableMouse and clipping and stickInput.length() == 0 and player_input == 0:
 			# we are not rotating the camera or moving the player, and we're still clipping to something,
 			# so show the player by snapping the camera forward again
-			view_cam_z = zooms[zoom] - new_view_cam_offset - clip_offset
+			view_cam_z = zooms[zoom] - new_view_cam_offset - rotational_offset - clip_offset
+			
+		elif MouseControls.EnableMouse and clipping and !MouseControls.mouse_moved and player_input == 0:
+			# we are not rotating the camera or moving the player, and we're still clipping to something,
+			# so show the player by snapping the camera forward again
+			view_cam_z = zooms[zoom] - new_view_cam_offset - rotational_offset - clip_offset
 		else:
 			# no collision at all, so set the camera to the correct distance
-			distance = zooms[zoom] - new_view_cam_offset
+			distance = zooms[zoom] - new_view_cam_offset - rotational_offset
 			
 	# ensure the camera doesn't go past its distance minimum
 	if view_cam_z <= MinViewCameraDistance:
@@ -417,7 +423,7 @@ func _rotate_to_player():
 # change the zoom level of the camera
 func _zoom_camera(var amount):
 	# cap the zoom level differently if using the mouse for input
-	if mouse_settings.mouse_captured:
+	if MouseControls.EnableMouse:
 		zoom += amount
 		
 		# don't let the player go past the last zoom level

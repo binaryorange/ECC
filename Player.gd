@@ -123,6 +123,9 @@ func _get_input(delta):
 	# zero the y of move
 	move.y = 0
 	
+	# normalize move
+	move.normalized()
+	
 	# apply our movement vector to our velocity vector
 	if EnableSlide:
 		if stickInput.length() > 0:

@@ -3,13 +3,16 @@ extends Node
 # This is a custom error logger system for ECC.
 
 var warn_level = ["ECC CRITICAL ERROR: ", "ECC WARNING: "]
-enum WARN {ERR = 0, WARN = 1}
+enum WARN_LEVEL {ERROR = 0, WARN = 1}
 
-var node_names = ["ViewCamera", "ClipCamera", "Player"]
-enum NODE {V_CAM = 0, C_CAM = 1, CC_PLAYER = 1}
+var msg = ["No node assigned to %s, please assign a node and try again!"]
 
-func log_error(level, message, node):
-	var _message = warn_level[level] + message
-	var _node = node_names[node]
-	printerr(_message % [_node, _node])
-	push_error(_message % [_node, _node])
+
+var node_names = ["ViewCamera", "ClipCamera", "Target"]
+enum NODE_NAME {V_CAM = 0, C_CAM = 1, TARGET = 2}
+
+func unassigned_node_error(level, node):
+	
+	var _msg = warn_level[level] + msg[0] % node_names[node]
+	printerr(_msg)
+	push_error(_msg)

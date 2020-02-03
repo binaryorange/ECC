@@ -36,22 +36,21 @@ EnableSlide = false
 FollowCamera = NodePath("../ECC_ThirdPerson")
 
 [node name="ECC_ThirdPerson" parent="." instance=ExtResource( 5 )]
-transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -15.968, 4.4, 70.218 )
-Player = NodePath("../TestPlayer")
-ViewCameraFOV = 60.0
-MaxCameraAngle = 35.0
-MinCameraAngle = -70.0
-FollowSmoothing = 0.09
+transform = Transform( -2.8213e-07, 0, -1, 0, 1, 0, 1, 0, -2.8213e-07, -15.968, 4.90267, 70.218 )
+Target = NodePath("../TestPlayer")
 
-[node name="MouseSettings" parent="ECC_ThirdPerson" index="2"]
-MouseSensitivity = 3.0
-ViewCamDistanceOverride = 0.25
+[node name="MouseControls" parent="ECC_ThirdPerson" index="2"]
+EnableMouse = true
 
 [node name="ViewCamera" parent="ECC_ThirdPerson/X Gimbal" index="1"]
+transform = Transform( 1, 3.55271e-15, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 0, 5 )
+doppler_tracking = 2
 fov = 65.0
 
 [node name="ClippedCamera" parent="ECC_ThirdPerson/X Gimbal/ClipCameraTarget" index="0"]
+doppler_tracking = 2
 fov = 177.0
+process_mode = 0
 
 [node name="ConfinedSpaceCheck" parent="ECC_ThirdPerson" index="4"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185799, -0.260498, 0.250057 )
