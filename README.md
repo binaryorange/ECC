@@ -1,3 +1,7 @@
+___ UPDATE 2/28/2020 ____
+
+I am no longer working on this project as some things have come up in life that require more attention. Please, feel free to download it, modify it, and use it in your projects, if you can get the annoying issues I was having with it sorted out!
+
 # Welcome to ECC - Extended ClippedCamera
 Improving Godot's default behavior of the ClippedCamera node.
 
